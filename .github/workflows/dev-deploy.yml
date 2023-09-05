@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: dev
+    runs-on: label-1
     steps:
       - name: Clone code from repository
         uses: actions/checkout@v3

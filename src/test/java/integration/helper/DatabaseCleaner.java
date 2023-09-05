@@ -38,5 +38,4 @@ public class DatabaseCleaner implements InitializingBean {
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
-
 }
