@@ -1,30 +1,21 @@
 package com.woowa.woowakit.domain.member.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.woowa.woowakit.domain.auth.application.AuthService;
-import com.woowa.woowakit.domain.auth.application.PasswordValidator;
-import com.woowa.woowakit.domain.auth.dto.request.LoginRequest;
-import com.woowa.woowakit.domain.auth.exception.LoginFailException;
-import com.woowa.woowakit.domain.auth.infra.PBKDF2PasswordEncoder;
-import com.woowa.woowakit.domain.auth.infra.TokenProvider;
-import com.woowa.woowakit.global.config.JpaConfig;
-import com.woowa.woowakit.global.config.QuerydslTestConfig;
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@DataJpaTest
-@Import({
-	AuthService.class, PBKDF2PasswordEncoder.class,
-	PasswordValidator.class,
-	TokenProvider.class,
-	ObjectMapper.class,
-	QuerydslTestConfig.class,
-	JpaConfig.class
-})
+import com.woowa.woowakit.domain.auth.application.AuthService;
+import com.woowa.woowakit.domain.auth.domain.MemberNameException;
+import com.woowa.woowakit.domain.auth.dto.request.LoginRequest;
+import com.woowa.woowakit.domain.auth.dto.request.SignUpRequest;
+import com.woowa.woowakit.domain.auth.exception.EmailInvalidException;
+import com.woowa.woowakit.domain.auth.exception.LoginFailException;
+import com.woowa.woowakit.domain.auth.exception.PasswordInvalidException;
+
+@SpringBootTest
 class AuthServiceTest {
 
 	@Autowired
@@ -33,8 +24,28 @@ class AuthServiceTest {
 	@Test
 	@DisplayName("없는 이메일로 조회하면 예외를 반환한다.")
 	void notFoundEmail() {
-		Assertions.assertThatThrownBy(
-				() -> authService.loginMember(LoginRequest.of("zzz@woowa.com", "asdfasdfasdf")))
+		assertThatCode(() -> authService.loginMember(LoginRequest.of("zzz@woowa.com", "asdfasdfasdf")))
 			.isInstanceOf(LoginFailException.class);
+	}
+
+	@Test
+	@DisplayName("유효하지 않는 비밀번호로 회원가입 시도 시 예외를 반환한다.")
+	void invalidPassword() {
+		assertThatCode(() -> authService.signUp(SignUpRequest.of("yongs170@naver.com", "asdasd", "hello")))
+			.isInstanceOf(PasswordInvalidException.class);
+	}
+
+	@Test
+	@DisplayName("유효하지 않는 이메일로 회원가입 시도 시 예외를 반환한다.")
+	void invalidEmail() {
+		assertThatCode(() -> authService.signUp(SignUpRequest.of("yongs170naver.com", "asdasd12345", "hello")))
+			.isInstanceOf(EmailInvalidException.class);
+	}
+
+	@Test
+	@DisplayName("유효하지 않는 닉네임으로 회원가입 시도 시 예외를 반환한다.")
+	void invalidName() {
+		assertThatCode(() -> authService.signUp(SignUpRequest.of("yongs170@naver.com", "asdasd12345", "")))
+			.isInstanceOf(MemberNameException.class);
 	}
 }

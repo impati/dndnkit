@@ -1,27 +1,31 @@
 package com.woowa.woowakit.domain.auth.exception;
 
-import com.woowa.woowakit.global.error.WooWaException;
 import org.springframework.http.HttpStatus;
 
-public class MemberException extends WooWaException {
+import lombok.Getter;
 
-    public MemberException(HttpStatus httpStatus) {
-        super(httpStatus);
-    }
+@Getter
+public class MemberException extends RuntimeException {
 
-    public MemberException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	private final HttpStatus httpStatus;
 
-    public MemberException(String message, Throwable cause, HttpStatus httpStatus) {
-        super(message, cause, httpStatus);
-    }
+	public MemberException(String message, Throwable cause) {
+		super(message, cause);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+	}
 
-    public MemberException(String message) {
-        super(message);
-    }
+	public MemberException(String message, Throwable cause, HttpStatus httpStatus) {
+		super(message, cause);
+		this.httpStatus = httpStatus;
+	}
 
-    public MemberException(String message, HttpStatus httpStatus) {
-        super(message, httpStatus);
-    }
+	public MemberException(String message) {
+		super(message);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+	}
+
+	public MemberException(String message, HttpStatus httpStatus) {
+		super(message);
+		this.httpStatus = httpStatus;
+	}
 }

@@ -3,13 +3,17 @@ package com.woowa.woowakit.global.error;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.woowa.woowakit.domain.auth.exception.MemberException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
@@ -42,6 +46,14 @@ public class CommonExceptionHandler {
 			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
 	}
 
+	@ExceptionHandler(MemberException.class)
+	public ResponseEntity<ErrorResponse> memberExceptionHandler(final MemberException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationExceptions(
 		final MethodArgumentNotValidException exception) {
@@ -57,7 +69,7 @@ public class CommonExceptionHandler {
 
 	private List<String> getFieldErrorMessages(final MethodArgumentNotValidException ex) {
 		return ex.getBindingResult().getAllErrors().stream().map(error -> {
-			String fieldName = ((FieldError) error).getField();
+			String fieldName = ((FieldError)error).getField();
 			String message = error.getDefaultMessage();
 			return fieldName + ": " + message;
 		}).collect(Collectors.toUnmodifiableList());
