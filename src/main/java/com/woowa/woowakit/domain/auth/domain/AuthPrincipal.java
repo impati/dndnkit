@@ -15,7 +15,7 @@ public class AuthPrincipal {
 	private Role role;
 
 	public static AuthPrincipal from(final Member member) {
-		return new AuthPrincipal(member.getId(), member.getEmail().getValue(), member.getRole());
+		return new AuthPrincipal(member.getId(), member.getEmail(), member.getRole());
 	}
 
 	public boolean isAdmin() {

@@ -1,14 +1,13 @@
 package com.woowa.woowakit.domain.auth.api;
 
-import com.woowa.woowakit.domain.auth.application.AuthService;
-import com.woowa.woowakit.domain.auth.domain.Email;
-import com.woowa.woowakit.domain.auth.domain.Role;
-import com.woowa.woowakit.domain.auth.dto.request.LoginRequest;
-import com.woowa.woowakit.domain.auth.dto.request.SignUpRequest;
-import com.woowa.woowakit.domain.auth.dto.response.LoginResponse;
-import com.woowa.woowakit.restDocsHelper.RequestFields;
-import com.woowa.woowakit.restDocsHelper.ResponseFields;
-import com.woowa.woowakit.restDocsHelper.RestDocsTest;
+import static com.woowa.woowakit.restDocsHelper.RestDocsHelper.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,14 +20,13 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.util.Map;
-
-import static com.woowa.woowakit.restDocsHelper.RestDocsHelper.defaultDocument;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.woowa.woowakit.domain.auth.application.AuthService;
+import com.woowa.woowakit.domain.auth.dto.request.LoginRequest;
+import com.woowa.woowakit.domain.auth.dto.request.SignUpRequest;
+import com.woowa.woowakit.domain.auth.dto.response.LoginResponse;
+import com.woowa.woowakit.restDocsHelper.RequestFields;
+import com.woowa.woowakit.restDocsHelper.ResponseFields;
+import com.woowa.woowakit.restDocsHelper.RestDocsTest;
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureRestDocs(uriHost = "api.test.com", uriPort = 80)
@@ -79,7 +77,12 @@ class AuthControllerTest extends RestDocsTest {
 		));
 
 		LoginRequest request = LoginRequest.of("yongs170@naver.com", "test1234");
-		LoginResponse response = LoginResponse.of("asadfdsewdqw", "tester", Role.ADMIN, Email.from("yongs170@naver.com"));
+		LoginResponse response = LoginResponse.builder()
+			.name("tester")
+			.role("ADMIN")
+			.accessToken("asadfdsewdqw")
+			.email("yongs170@naver.com")
+			.build();
 		given(authService.loginMember(any())).willReturn(response);
 
 		mockMvc.perform(post("/auth/login")
@@ -90,5 +93,4 @@ class AuthControllerTest extends RestDocsTest {
 			.andDo(MockMvcResultHandlers.print())
 			.andDo(defaultDocument("auth/login", requestFields, responseFields));
 	}
-
 }

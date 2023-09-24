@@ -11,6 +11,7 @@ import com.woowa.woowakit.domain.auth.domain.EncodedPassword;
 import com.woowa.woowakit.domain.auth.domain.Member;
 import com.woowa.woowakit.domain.auth.domain.MemberRepository;
 import com.woowa.woowakit.domain.auth.domain.PasswordEncoder;
+import com.woowa.woowakit.domain.auth.domain.Role;
 import com.woowa.woowakit.domain.auth.dto.request.LoginRequest;
 import com.woowa.woowakit.domain.auth.dto.request.SignUpRequest;
 import com.woowa.woowakit.domain.auth.dto.response.LoginResponse;
@@ -26,30 +27,37 @@ public class AuthService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final PasswordValidator passwordValidator;
 	private final TokenProvider tokenProvider;
 	private final ObjectMapper objectMapper;
 
 	public Long signUp(final SignUpRequest request) {
-		passwordValidator.validatePassword(request.getPassword());
-
-		final Member member = Member.of(
-			request.getEmail(),
-			EncodedPassword.of(request.getPassword(), passwordEncoder),
-			request.getName()
-		);
+		final Member member = Member.builder()
+			.role(Role.USER)
+			.email(Email.from(request.getEmail()))
+			.encodedPassword(EncodedPassword.of(request.getPassword(), passwordEncoder))
+			.name(request.getName())
+			.build();
 
 		return memberRepository.save(member).getId();
 	}
 
 	@Transactional(readOnly = true)
 	public LoginResponse loginMember(final LoginRequest loginRequest) {
-		Member member = getMemberByEmail(loginRequest.getEmail());
+		final Member member = getMemberByEmail(loginRequest.getEmail());
 		member.validatePassword(loginRequest.getPassword(), passwordEncoder);
-		AuthPrincipal authPrincipal = AuthPrincipal.from(member);
 
-		String accessToken = tokenProvider.createToken(principalToJson(authPrincipal));
-		return LoginResponse.of(accessToken, member.getName(), member.getRole(), member.getEmail());
+		final String accessToken = createAccessToken(member);
+
+		return LoginResponse.builder()
+			.role(member.getRoleName())
+			.accessToken(accessToken)
+			.email(member.getEmail())
+			.name(member.getName())
+			.build();
+	}
+
+	private String createAccessToken(final Member member) {
+		return tokenProvider.createToken(principalToJson(AuthPrincipal.from(member)));
 	}
 
 	private String principalToJson(final AuthPrincipal authPrincipal) {

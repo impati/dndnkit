@@ -38,7 +38,7 @@ class ProductTest {
 	void isEnoughQuantityFalse() {
 		// given
 		Product product = Product.builder()
-			.quantity(Quantity.from(100))
+			.quantity(100)
 			.build();
 
 		// when , then
@@ -50,7 +50,7 @@ class ProductTest {
 	void isEnoughQuantityTrue() {
 		// given
 		Product product = Product.builder()
-			.quantity(Quantity.from(100))
+			.quantity(100)
 			.build();
 
 		// when , then
@@ -63,7 +63,7 @@ class ProductTest {
 		// given
 		Product product = Product.builder()
 			.status(ProductStatus.IN_STOCK)
-			.quantity(Quantity.from(100))
+			.quantity(100)
 			.build();
 
 		// when , then
@@ -77,7 +77,7 @@ class ProductTest {
 		// given
 		Product product = Product.builder()
 			.status(productStatus)
-			.quantity(Quantity.from(100))
+			.quantity(100)
 			.build();
 
 		// when , then
@@ -90,7 +90,7 @@ class ProductTest {
 		// given
 		Product product = Product.builder()
 			.status(ProductStatus.PRE_REGISTRATION)
-			.quantity(Quantity.from(100))
+			.quantity(100)
 			.build();
 
 		// when
@@ -106,7 +106,7 @@ class ProductTest {
 		// given
 		Product product = Product.builder()
 			.status(ProductStatus.PRE_REGISTRATION)
-			.quantity(Quantity.from(0))
+			.quantity(0)
 			.build();
 
 		// when , then
@@ -121,7 +121,7 @@ class ProductTest {
 		// given
 		Product product = Product.builder()
 			.status(ProductStatus.PRE_REGISTRATION)
-			.quantity(Quantity.from(10))
+			.quantity(10)
 			.build();
 
 		// when

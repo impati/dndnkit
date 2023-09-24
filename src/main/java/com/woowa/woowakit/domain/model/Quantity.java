@@ -2,6 +2,8 @@ package com.woowa.woowakit.domain.model;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
+
 import com.woowa.woowakit.domain.product.exception.ProductQuantityNegativeException;
 
 import lombok.Getter;
@@ -9,7 +11,11 @@ import lombok.Getter;
 @Getter
 public class Quantity {
 
-	private final long value;
+	@Column(name = "quantity")
+	private long value;
+
+	protected Quantity() {
+	}
 
 	private Quantity(final long value) {
 		validNotNegative(value);
@@ -26,8 +32,8 @@ public class Quantity {
 		}
 	}
 
-	public Quantity add(final Quantity other) {
-		return Quantity.from(value + other.value);
+	public Quantity add(final long quantity) {
+		return Quantity.from(value + quantity);
 	}
 
 	public Quantity subtract(final Quantity other) {

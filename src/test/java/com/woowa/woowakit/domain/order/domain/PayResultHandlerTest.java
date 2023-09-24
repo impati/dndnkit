@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.order.domain;
 
+import static com.woowa.woowakit.domain.fixture.ProductFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -9,12 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.woowa.woowakit.domain.cart.domain.CartItemRepository;
-import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.order.domain.mapper.CartItemMapper;
 import com.woowa.woowakit.domain.order.fixture.OrderFixture;
 import com.woowa.woowakit.domain.product.domain.product.Product;
 import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.fixture.ProductFixture;
 
 class PayResultHandlerTest {
 
@@ -30,12 +29,16 @@ class PayResultHandlerTest {
 			mock(CartItemMapper.class)
 		);
 		Order order = OrderFixture.anOrder().build();
-		Product product = ProductFixture.anProduct().id(2L).quantity(Quantity.from(1L)).build();
+		Product product = getProduct();
 
 		// when
 		payResultHandler.rollbackProducts(order, List.of(product));
 
 		// then
 		assertThat(product).extracting("quantity").extracting("value").isEqualTo(2L);
+	}
+
+	private Product getProduct() {
+		return getProductBuilder().id(1L).quantity(1).build();
 	}
 }

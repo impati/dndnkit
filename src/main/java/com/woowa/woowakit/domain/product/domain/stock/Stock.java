@@ -95,7 +95,7 @@ public class Stock extends BaseEntity {
 	}
 
 	public void addQuantity(final Quantity quantity) {
-		this.quantity = this.quantity.add(quantity);
+		this.quantity = this.quantity.add(quantity.getValue());
 		this.product.addQuantity(quantity);
 	}
 
