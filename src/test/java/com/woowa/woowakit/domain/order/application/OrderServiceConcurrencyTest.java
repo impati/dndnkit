@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.order.application;
 
+import static com.woowa.woowakit.domain.fixture.ProductFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +27,6 @@ import com.woowa.woowakit.domain.order.dto.request.OrderCreateRequest;
 import com.woowa.woowakit.domain.order.dto.request.OrderPayRequest;
 import com.woowa.woowakit.domain.product.domain.product.Product;
 import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.fixture.ProductFixture;
 
 import reactor.core.publisher.Mono;
 
@@ -55,7 +55,7 @@ class OrderServiceConcurrencyTest {
 		// given
 		Member member = memberRepository.save(MemberFixture.anMember().build());
 
-		Product product = productRepository.save(ProductFixture.anProduct().build());
+		Product product = productRepository.save(getProduct());
 
 		int threadCount = 10;
 		for (int i = 0; i < threadCount; i++) {
@@ -85,5 +85,9 @@ class OrderServiceConcurrencyTest {
 		// then
 		Product afterProduct = productRepository.findById(product.getId()).orElseThrow();
 		assertThat(afterProduct.getQuantity()).isEqualTo(Quantity.from(0));
+	}
+
+	private static Product getProduct() {
+		return getProductBuilder().build();
 	}
 }

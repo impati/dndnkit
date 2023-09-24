@@ -1,5 +1,26 @@
 package com.woowa.woowakit.domain.cart.api;
 
+import static com.woowa.woowakit.restDocsHelper.RestDocsHelper.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.web.servlet.MockMvc;
+
 import com.woowa.woowakit.domain.cart.application.CartItemService;
 import com.woowa.woowakit.domain.cart.domain.CartItem;
 import com.woowa.woowakit.domain.cart.domain.CartItemSpecification;
@@ -13,27 +34,6 @@ import com.woowa.woowakit.restDocsHelper.PathParam;
 import com.woowa.woowakit.restDocsHelper.RequestFields;
 import com.woowa.woowakit.restDocsHelper.ResponseFields;
 import com.woowa.woowakit.restDocsHelper.RestDocsTest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.woowa.woowakit.restDocsHelper.RestDocsHelper.authorizationDocument;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CartItemController.class)
 @AutoConfigureRestDocs(uriHost = "api.test.com", uriPort = 80)
@@ -82,7 +82,7 @@ class CartItemControllerTest extends RestDocsTest {
 
 		String token = getToken();
 		CartItemAddRequest request = CartItemAddRequest.of(1L, 10L);
-		given(cartItemService.addCartItem(any(), any())).willReturn(CartItem.of(1L, 2L));
+		given(cartItemService.addCartItem(any(), any())).willReturn(getStubCartItem());
 
 		mockMvc.perform(post("/cart-items")
 				.header(HttpHeaders.AUTHORIZATION, token)
@@ -141,5 +141,9 @@ class CartItemControllerTest extends RestDocsTest {
 			productId,
 			cartItemId
 		);
+	}
+
+	private CartItem getStubCartItem() {
+		return CartItem.builder().memberId(1L).build();
 	}
 }

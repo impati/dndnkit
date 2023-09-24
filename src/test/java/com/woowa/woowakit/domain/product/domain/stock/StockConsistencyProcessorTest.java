@@ -1,22 +1,23 @@
 package com.woowa.woowakit.domain.product.domain.stock;
 
-import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.ProductSalesRepository;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.domain.product.ProductSales;
-import com.woowa.woowakit.domain.product.domain.product.SaleQuantity;
-import com.woowa.woowakit.domain.product.fixture.ProductFixture;
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.woowa.woowakit.domain.fixture.ProductFixture;
+import com.woowa.woowakit.domain.model.Quantity;
+import com.woowa.woowakit.domain.product.domain.ProductSalesRepository;
+import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.product.ProductSales;
+import com.woowa.woowakit.domain.product.domain.product.SaleQuantity;
 
 @SpringBootTest
 class StockConsistencyProcessorTest {
@@ -33,7 +34,6 @@ class StockConsistencyProcessorTest {
 	@Autowired
 	private ProductSalesRepository productSalesRepository;
 
-
 	@AfterEach
 	void setup() {
 		productRepository.deleteAll();
@@ -41,14 +41,11 @@ class StockConsistencyProcessorTest {
 		productSalesRepository.deleteAll();
 	}
 
-
 	@Test
 	@DisplayName("상품 수량과 재고 테이블의 정합성을 맞춘다.")
 	void doProcessTest() {
 		// given
-		Product product = productRepository.save(ProductFixture.anProduct()
-			.quantity(Quantity.from(35))
-			.build());
+		Product product = productRepository.save(getProduct(35));
 
 		Stock stockA = stockRepository.save(createStock(product, LocalDate.of(3023, 9, 22), 10));
 		Stock stockB = stockRepository.save(createStock(product, LocalDate.of(3023, 9, 25), 20));
@@ -67,6 +64,12 @@ class StockConsistencyProcessorTest {
 		assertThat(productSales).hasSize(1)
 			.extracting(ProductSales::getSale)
 			.contains(SaleQuantity.from(25));
+	}
+
+	private Product getProduct(final long quantity) {
+		return ProductFixture.getProductBuilder()
+			.quantity(quantity)
+			.build();
 	}
 
 	private Stock createStock(Product product, LocalDate date, long quantity) {

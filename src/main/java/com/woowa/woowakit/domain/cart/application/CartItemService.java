@@ -8,12 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.woowa.woowakit.domain.cart.domain.CartItem;
 import com.woowa.woowakit.domain.cart.domain.CartItemRepository;
 import com.woowa.woowakit.domain.cart.domain.CartItemSpecification;
-import com.woowa.woowakit.domain.cart.domain.CartItemValidator;
 import com.woowa.woowakit.domain.cart.dto.CartItemAddRequest;
 import com.woowa.woowakit.domain.cart.dto.CartItemUpdateQuantityRequest;
 import com.woowa.woowakit.domain.cart.exception.CartItemNotExistException;
 import com.woowa.woowakit.domain.cart.exception.NotMyCartItemException;
-import com.woowa.woowakit.domain.model.Quantity;
+import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
+import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,21 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 public class CartItemService {
 
 	private final CartItemRepository cartItemRepository;
-	private final CartItemValidator cartItemValidator;
+	private final ProductRepository productRepository;
 
 	@Transactional
 	public CartItem addCartItem(final CartItemAddRequest request, final Long memberId) {
-		CartItem cartItem = cartItemRepository.findCartItemByMemberIdAndProductId(memberId, request.getProductId())
-			.orElse(CartItem.of(memberId, request.getProductId()));
+		final CartItem cartItem = getCartItemByMemberIdAndProductId(memberId, request.getProductId());
 
-		log.info("CartItemService.addCartItem() 실행 전: cartItemId = {}, quantity = {}, addQuantity = {}", cartItem.getId(), cartItem.getQuantity().getValue(), request.getQuantity());
-		cartItem.addQuantity(Quantity.from(request.getQuantity()), cartItemValidator);
-		log.info("CartItemService.addCartItem() 실행 후: cartItemId = {}, quantity = {}", cartItem.getId(), cartItem.getQuantity().getValue());
+		cartItem.addQuantity(request.getQuantity());
 
 		return cartItemRepository.save(cartItem);
 	}
 
-	@Transactional
 	public List<CartItemSpecification> readCartItem(final Long memberId) {
 		return cartItemRepository.findCartItemByMemberId(memberId);
 	}
@@ -50,18 +47,31 @@ public class CartItemService {
 	}
 
 	@Transactional
-	public void updateQuantity(final Long cartItemId, final CartItemUpdateQuantityRequest request, final Long memberId) {
-		CartItem cartItem = getCartItem(cartItemId);
-
-		log.info("CartItemService.updateQuantity() 실행 전: cartItemId = {}, quantity = {}, addQuantity = {}", cartItem.getId(), cartItem.getQuantity().getValue(), request.getQuantity());
+	public void updateQuantity(
+		final Long cartItemId,
+		final CartItemUpdateQuantityRequest request,
+		final Long memberId
+	) {
+		final CartItem cartItem = getCartItem(cartItemId);
 
 		if (!cartItem.isMyCartItem(memberId)) {
 			throw new NotMyCartItemException();
 		}
 
-		cartItem.updateQuantity(request.getQuantity(), cartItemValidator);
+		cartItem.updateQuantity(request.getQuantity());
+	}
 
-		log.info("CartItemService.updateQuantity() 실행 후: cartItemId = {}, quantity = {}", cartItem.getId(), cartItem.getQuantity().getValue());
+	private CartItem getCartItemByMemberIdAndProductId(final Long memberId, final Long productId) {
+		return cartItemRepository.findCartItemByMemberIdAndProductId(memberId, productId)
+			.orElse(CartItem.builder()
+				.memberId(memberId)
+				.product(getProduct(productId))
+				.build());
+	}
+
+	private Product getProduct(final Long productId) {
+		return productRepository.findById(productId)
+			.orElseThrow(ProductNotExistException::new);
 	}
 
 	private CartItem getCartItem(final Long cartItemId) {

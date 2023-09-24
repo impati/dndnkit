@@ -6,11 +6,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.woowa.woowakit.domain.cart.domain.CartItem;
+import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
 import com.woowa.woowakit.domain.order.domain.Order;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
+import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class CartItemMapper {
+
+	private final ProductRepository productRepository;
 
 	public List<CartItem> mapAllFrom(final Order order) {
 		return order.getOrderItems()
@@ -20,6 +28,15 @@ public class CartItemMapper {
 	}
 
 	private CartItem mapFrom(final OrderItem orderItem, final Long memberId) {
-		return CartItem.of(memberId, orderItem.getProductId(), orderItem.getQuantity().getValue());
+		return CartItem.builder()
+			.memberId(memberId)
+			.product(getProduct(orderItem.getProductId()))
+			.quantity(orderItem.getQuantity().getValue())
+			.build();
+	}
+
+	private Product getProduct(final Long productId) {
+		return productRepository.findById(productId)
+			.orElseThrow(ProductNotExistException::new);
 	}
 }

@@ -60,14 +60,14 @@ public class Product extends BaseEntity {
 		final ProductPrice price,
 		final ProductImage imageUrl,
 		final ProductStatus status,
-		final Quantity quantity
+		final long quantity
 	) {
 		this.id = id;
 		this.name = name;
 		this.price = price;
 		this.imageUrl = imageUrl;
 		this.status = status;
-		this.quantity = quantity;
+		this.quantity = Quantity.from(quantity);
 	}
 
 	public static Product of(
@@ -80,7 +80,6 @@ public class Product extends BaseEntity {
 			.price(ProductPrice.from(price))
 			.imageUrl(ProductImage.from(imageUrl))
 			.status(ProductStatus.PRE_REGISTRATION)
-			.quantity(INITIAL_QUANTITY)
 			.build();
 	}
 
@@ -97,7 +96,7 @@ public class Product extends BaseEntity {
 	}
 
 	public void addQuantity(final Quantity quantity) {
-		this.quantity = this.quantity.add(quantity);
+		this.quantity = this.quantity.add(quantity.getValue());
 	}
 
 	public void subtractQuantity(final Quantity quantity) {
