@@ -22,9 +22,6 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.woowa.woowakit.domain.model.Image;
-import com.woowa.woowakit.domain.model.Money;
-import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.order.application.OrderService;
 import com.woowa.woowakit.domain.order.domain.Order;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
@@ -183,12 +180,14 @@ class OrderControllerTest extends RestDocsTest {
 		final long price,
 		final int quantity
 	) {
-		return OrderItem.of(
-			productId,
-			name,
-			Image.from("https://service-hub.org/file/log"),
-			Money.from(price),
-			Quantity.from(quantity));
+
+		return OrderItem.builder()
+			.productId(productId)
+			.name(name)
+			.image("https://service-hub.org/file/log")
+			.price(price)
+			.quantity(quantity)
+			.build();
 	}
 }
 

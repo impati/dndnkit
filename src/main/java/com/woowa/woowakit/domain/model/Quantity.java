@@ -2,16 +2,16 @@ package com.woowa.woowakit.domain.model;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 import com.woowa.woowakit.domain.product.exception.ProductQuantityNegativeException;
 
 import lombok.Getter;
 
 @Getter
+@Embeddable
 public class Quantity {
 
-	@Column(name = "quantity")
 	private long value;
 
 	protected Quantity() {
@@ -60,6 +60,7 @@ public class Quantity {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
+
 		Quantity that = (Quantity)o;
 		return value == that.value;
 	}

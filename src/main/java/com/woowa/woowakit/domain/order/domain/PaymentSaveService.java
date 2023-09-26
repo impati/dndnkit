@@ -1,8 +1,10 @@
 package com.woowa.woowakit.domain.order.domain;
 
-import com.woowa.woowakit.domain.model.Money;
-
 public interface PaymentSaveService {
 
-	void save(Long orderId, Money totalPrice, String paymentKey);
+	void save(
+		final Long orderId,
+		final long totalPrice,
+		final String paymentKey
+	);
 }

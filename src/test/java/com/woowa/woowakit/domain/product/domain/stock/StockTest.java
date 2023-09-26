@@ -24,8 +24,8 @@ class StockTest {
 		stock.addQuantity(Quantity.from(5));
 
 		// then
-		assertThat(product).extracting(Product::getQuantity)
-			.extracting(Quantity::getValue)
+		assertThat(product)
+			.extracting(Product::getQuantity)
 			.isEqualTo(5L);
 	}
 

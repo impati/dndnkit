@@ -40,7 +40,8 @@ public class OrderController {
 		@Authenticated final AuthPrincipal authPrincipal,
 		@Valid @RequestBody final List<OrderCreateRequest> request
 	) {
-		OrderResponse response = orderService.create(authPrincipal, request);
+		final OrderResponse response = orderService.create(authPrincipal, request);
+
 		return ResponseEntity.created(URI.create("/orders/" + response.getId())).body(response);
 	}
 
@@ -52,6 +53,7 @@ public class OrderController {
 		@Valid @RequestBody final OrderPayRequest request
 	) {
 		orderService.pay(authPrincipal, id, request);
+
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

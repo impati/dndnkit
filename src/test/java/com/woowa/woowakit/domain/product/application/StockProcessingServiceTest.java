@@ -64,8 +64,7 @@ class StockProcessingServiceTest {
 			.hasSize(3)
 			.extracting("quantity")
 			.contains(Quantity.from(10), Quantity.from(10), Quantity.from(5));
-		assertThat(productRepository.findById(product.getId()).get().getQuantity()).isEqualTo(
-			Quantity.from(25));
+		assertThat(productRepository.findById(product.getId()).get().getQuantity()).isEqualTo(25);
 	}
 
 	@Test

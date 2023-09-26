@@ -1,20 +1,26 @@
 package com.woowa.woowakit.domain.product.application;
 
-import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
-import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.domain.stock.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static java.lang.System.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static java.lang.System.currentTimeMillis;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
+import com.woowa.woowakit.domain.model.Quantity;
+import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.stock.ExpirationDateProcessor;
+import com.woowa.woowakit.domain.product.domain.stock.Stock;
+import com.woowa.woowakit.domain.product.domain.stock.StockConsistencyProcessor;
+import com.woowa.woowakit.domain.product.domain.stock.StockRepository;
+import com.woowa.woowakit.domain.product.domain.stock.StockType;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -76,6 +82,6 @@ public class StockProcessingService {
 	}
 
 	private boolean isPossibleSubtractExpiryQuantity(final Product product, final long subtractExpiryQuantity) {
-		return product.getQuantity().smallerThan(Quantity.from(subtractExpiryQuantity));
+		return product.isSmallerThan(subtractExpiryQuantity);
 	}
 }

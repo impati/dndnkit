@@ -20,9 +20,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	@Override
-	public List<Order> findOrdersByMemberId(Long memberId, Long lastOrderId, int pageSize) {
-		return jpaQueryFactory.selectFrom(order)
-			.where(order.memberId.eq(memberId),
+	public List<Order> findOrdersByMemberId(final Long memberId, final Long lastOrderId, final int pageSize) {
+		return jpaQueryFactory
+			.selectFrom(order)
+			.where(
+				order.memberId.eq(memberId),
 				cursor(lastOrderId),
 				order.orderStatus.in(OrderStatus.PAYED, OrderStatus.CANCELED))
 			.orderBy(order.id.desc())
@@ -30,7 +32,7 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
 			.fetch();
 	}
 
-	private BooleanExpression cursor(Long lastOrderId) {
+	private BooleanExpression cursor(final Long lastOrderId) {
 		if (lastOrderId == null) {
 			return null;
 		}

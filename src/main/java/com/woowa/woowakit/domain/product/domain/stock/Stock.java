@@ -2,8 +2,10 @@ package com.woowa.woowakit.domain.product.domain.stock;
 
 import java.time.LocalDate;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,7 +19,6 @@ import javax.persistence.Table;
 
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.model.converter.QuantityConverter;
 import com.woowa.woowakit.domain.product.domain.product.Product;
 import com.woowa.woowakit.domain.product.domain.stock.converter.ExpiryDateConverter;
 
@@ -42,7 +43,8 @@ public class Stock extends BaseEntity {
 	@Column(name = "expiry_date")
 	private ExpiryDate expiryDate;
 
-	@Convert(converter = QuantityConverter.class)
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "quantity"))
 	private Quantity quantity;
 
 	@ManyToOne(fetch = FetchType.LAZY)

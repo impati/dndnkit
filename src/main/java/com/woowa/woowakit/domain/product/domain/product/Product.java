@@ -2,6 +2,7 @@ package com.woowa.woowakit.domain.product.domain.product;
 
 import java.util.Objects;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
@@ -15,7 +16,6 @@ import javax.persistence.Table;
 
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.model.converter.QuantityConverter;
 import com.woowa.woowakit.domain.product.domain.product.converter.ProductImageConverter;
 import com.woowa.woowakit.domain.product.domain.product.converter.ProductPriceConverter;
 import com.woowa.woowakit.domain.product.exception.UpdateProductStatusFailException;
@@ -50,22 +50,23 @@ public class Product extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
-	@Convert(converter = QuantityConverter.class)
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "quantity"))
 	private Quantity quantity;
 
 	@Builder
 	private Product(
 		final Long id,
-		final ProductName name,
-		final ProductPrice price,
-		final ProductImage imageUrl,
+		final String name,
+		final long price,
+		final String imageUrl,
 		final ProductStatus status,
 		final long quantity
 	) {
 		this.id = id;
-		this.name = name;
-		this.price = price;
-		this.imageUrl = imageUrl;
+		this.name = ProductName.from(name);
+		this.price = ProductPrice.from(price);
+		this.imageUrl = ProductImage.from(imageUrl);
 		this.status = status;
 		this.quantity = Quantity.from(quantity);
 	}
@@ -76,9 +77,9 @@ public class Product extends BaseEntity {
 		final String imageUrl
 	) {
 		return Product.builder()
-			.name(ProductName.from(name))
-			.price(ProductPrice.from(price))
-			.imageUrl(ProductImage.from(imageUrl))
+			.name(name)
+			.price(price)
+			.imageUrl(imageUrl)
 			.status(ProductStatus.PRE_REGISTRATION)
 			.build();
 	}
@@ -109,5 +110,25 @@ public class Product extends BaseEntity {
 
 	public boolean isEnoughQuantity(final Quantity requiredQuantity) {
 		return requiredQuantity.smallerThanOrEqualTo(this.quantity);
+	}
+
+	public String getImageUrl() {
+		return imageUrl.getPath();
+	}
+
+	public long getPrice() {
+		return price.getPrice().getValue();
+	}
+
+	public String getName() {
+		return name.getName();
+	}
+
+	public long getQuantity() {
+		return quantity.getValue();
+	}
+
+	public boolean isSmallerThan(final long subtractExpiryQuantity) {
+		return this.quantity.smallerThan(Quantity.from(subtractExpiryQuantity));
 	}
 }

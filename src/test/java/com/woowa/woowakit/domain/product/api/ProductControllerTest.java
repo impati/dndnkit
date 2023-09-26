@@ -26,9 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.woowa.woowakit.domain.product.application.ProductService;
 import com.woowa.woowakit.domain.product.application.StockService;
 import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductImage;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
-import com.woowa.woowakit.domain.product.domain.product.ProductPrice;
 import com.woowa.woowakit.domain.product.domain.product.ProductSpecification;
 import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
 import com.woowa.woowakit.domain.product.dto.request.AllProductSearchRequest;
@@ -260,9 +257,9 @@ class ProductControllerTest extends RestDocsTest {
 		return Product.builder()
 			.status(ProductStatus.IN_STOCK)
 			.quantity(1000)
-			.price(ProductPrice.from(10000L))
-			.name(ProductName.from("된장 밀키트"))
-			.imageUrl(ProductImage.from("https://service-hub/file/log/"))
+			.price(10000L)
+			.name("된장 밀키트")
+			.imageUrl("https://service-hub/file/log/")
 			.build();
 	}
 }

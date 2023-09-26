@@ -1,15 +1,21 @@
 package com.woowa.woowakit.domain.model;
 
+import java.util.Objects;
+
+import javax.persistence.Embeddable;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Objects;
-
-@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
+@Embeddable
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class Image {
 
-	private final String value;
+	private String value;
+
+	protected Image() {
+	}
 
 	public static Image from(final String value) {
 		return new Image(value);
@@ -17,9 +23,14 @@ public class Image {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Image)) return false;
-		final Image image = (Image) o;
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Image)) {
+			return false;
+		}
+
+		final Image image = (Image)o;
 		return Objects.equals(value, image.value);
 	}
 
