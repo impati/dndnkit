@@ -17,10 +17,10 @@ import com.woowa.woowakit.domain.auth.domain.EncodedPassword;
 import com.woowa.woowakit.domain.auth.domain.Member;
 import com.woowa.woowakit.domain.auth.domain.Role;
 import com.woowa.woowakit.domain.auth.infra.PBKDF2PasswordEncoder;
+import com.woowa.woowakit.domain.fixture.OrderFixture;
 import com.woowa.woowakit.domain.order.domain.Order;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
 import com.woowa.woowakit.domain.order.domain.OrderRepository;
-import com.woowa.woowakit.domain.order.fixture.OrderFixture;
 import com.woowa.woowakit.global.config.JpaConfig;
 import com.woowa.woowakit.global.config.QuerydslTestConfig;
 
@@ -42,15 +42,15 @@ class OrderRepositoryTest {
 		final Member member = createMember();
 		entityManager.persist(member);
 
-		OrderItem orderItem1 = OrderFixture.anOrderItem()
+		OrderItem orderItem1 = OrderFixture.getOrderItemBuilder()
 			.productId(1L)
 			.build();
 
-		OrderItem orderItem2 = OrderFixture.anOrderItem()
+		OrderItem orderItem2 = OrderFixture.getOrderItemBuilder()
 			.productId(2L)
 			.build();
 
-		Order order = OrderFixture.anOrder()
+		Order order = OrderFixture.getOrderBuilder()
 			.memberId(member.getId())
 			.orderItems(List.of(orderItem1, orderItem2))
 			.build();
@@ -74,21 +74,21 @@ class OrderRepositoryTest {
 		Member member = createMember();
 		entityManager.persist(member);
 
-		OrderItem orderItem1 = OrderFixture.anOrderItem()
+		OrderItem orderItem1 = OrderFixture.getOrderItemBuilder()
 			.productId(1L)
 			.build();
 
-		OrderItem orderItem2 = OrderFixture.anOrderItem()
+		OrderItem orderItem2 = OrderFixture.getOrderItemBuilder()
 			.productId(2L)
 			.build();
 
-		Order order1 = OrderFixture.anOrder()
+		Order order1 = OrderFixture.getOrderBuilder()
 			.memberId(member.getId())
 			.orderItems(List.of(orderItem1))
 			.build();
 		order1.pay();
 
-		Order order2 = OrderFixture.anOrder()
+		Order order2 = OrderFixture.getOrderBuilder()
 			.memberId(member.getId())
 			.orderItems(List.of(orderItem2))
 			.build();

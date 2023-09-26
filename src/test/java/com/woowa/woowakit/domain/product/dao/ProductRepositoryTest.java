@@ -15,7 +15,6 @@ import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.product.domain.ProductSalesRepository;
 import com.woowa.woowakit.domain.product.domain.product.InStockProductSearchCondition;
 import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
 import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
 import com.woowa.woowakit.domain.product.domain.product.ProductSales;
 import com.woowa.woowakit.domain.product.domain.product.ProductSpecification;
@@ -134,16 +133,12 @@ class ProductRepositoryTest {
 		Assertions.assertThat(products).hasSize(4)
 			.extracting(ProductSpecification::getProduct)
 			.extracting(Product::getName)
-			.contains(
-				ProductName.from("productE"),
-				ProductName.from("productF"),
-				ProductName.from("productG"),
-				ProductName.from("productH"));
+			.contains("productE", "productF", "productG", "productH");
 	}
 
 	private Product getProduct(final String productName) {
 		return ProductFixture.getProductBuilder()
-			.name(ProductName.from(productName))
+			.name(productName)
 			.build();
 	}
 

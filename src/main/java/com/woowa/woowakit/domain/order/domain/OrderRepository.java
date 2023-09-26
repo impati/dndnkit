@@ -11,7 +11,7 @@ import com.woowa.woowakit.domain.order.dao.OrderRepositoryCustom;
 public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
 
 	@Query("select o from Order o join fetch o.orderItems where o.id = :id and o.memberId = :memberId")
-	Optional<Order> findOrderById(@Param("id") Long id, @Param("memberId") Long memberId);
+	Optional<Order> findOrderById(@Param("id") final Long id, @Param("memberId") final Long memberId);
 
-	Optional<Order> findByIdAndMemberId(Long orderId, Long memberId);
+	Optional<Order> findByIdAndMemberId(final Long orderId, final Long memberId);
 }

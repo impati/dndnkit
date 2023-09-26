@@ -3,6 +3,7 @@ package com.woowa.woowakit.infra.payment.toss;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import reactor.core.scheduler.Schedulers;
 
 @DisplayName("ThreadSleepClient 테스트")
@@ -13,7 +14,7 @@ class ThreadSleepClientTest {
 	void test() {
 		long start = System.currentTimeMillis();
 		ThreadSleepClient threadSleepClient = new ThreadSleepClient(Schedulers.parallel());
-		threadSleepClient.validatePayment("paymentKey", "orderToken", null).block();
+		threadSleepClient.validatePayment("paymentKey", "orderToken", 100L).block();
 		Assertions.assertThat(System.currentTimeMillis() - start).isGreaterThan(500);
 	}
 }

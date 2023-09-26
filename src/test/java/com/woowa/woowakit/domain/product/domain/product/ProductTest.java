@@ -30,7 +30,7 @@ class ProductTest {
 		Product product = Product.of("test name", 1000L, "test image url");
 
 		// then
-		assertThat(product).extracting("quantity").isEqualTo(Quantity.from(0));
+		assertThat(product.getQuantity()).isZero();
 	}
 
 	@Test

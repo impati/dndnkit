@@ -9,5 +9,4 @@ class WoowakitApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

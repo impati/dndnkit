@@ -37,9 +37,30 @@ public class OrderService {
 		final AuthPrincipal authPrincipal,
 		final Long orderId
 	) {
-		log.info("주문 조회 memberId: {} orderId: {}", authPrincipal.getId(), orderId);
-		Order order = getOrderByOrderIdAndMemberId(authPrincipal, orderId);
+		final Order order = getOrderByOrderIdAndMemberId(authPrincipal, orderId);
+
 		return OrderDetailResponse.from(order);
+	}
+
+	@Transactional(readOnly = true)
+	public List<OrderDetailResponse> findAllOrderByMemberId(
+		final AuthPrincipal authPrincipal,
+		final OrderSearchRequest request
+	) {
+		final List<Order> orders = orderRepository.findOrdersByMemberId(
+			authPrincipal.getId(), request.getLastOrderId(), request.getPageSize()
+		);
+
+		return OrderDetailResponse.listOf(orders);
+	}
+
+	@Transactional
+	@Counted("order.preOrder")
+	public OrderResponse create(final AuthPrincipal authPrincipal, final List<OrderCreateRequest> request) {
+		final Order order = orderMapper.mapFrom(authPrincipal.getId(), request);
+
+		orderRepository.save(order);
+		return OrderResponse.from(order);
 	}
 
 	private Order getOrderByOrderIdAndMemberId(
@@ -50,29 +71,12 @@ public class OrderService {
 			.orElseThrow(OrderNotFoundException::new);
 	}
 
-	@Transactional(readOnly = true)
-	public List<OrderDetailResponse> findAllOrderByMemberId(
+	public void pay(
 		final AuthPrincipal authPrincipal,
-		final OrderSearchRequest request
+		final Long orderId,
+		final OrderPayRequest request
 	) {
-		log.info("주문 목록 조회 memberId: {}", authPrincipal.getId());
-		List<Order> orders = orderRepository.findOrdersByMemberId(
-			authPrincipal.getId(), request.getLastOrderId(), request.getPageSize());
-		return OrderDetailResponse.listOf(orders);
-	}
-
-	@Transactional
-	@Counted("order.preOrder")
-	public OrderResponse create(final AuthPrincipal authPrincipal, final List<OrderCreateRequest> request) {
-		log.info("주문 생성 memberId: {}", authPrincipal.getId());
-		Order order = orderMapper.mapFrom(authPrincipal.getId(), request);
-
-		orderRepository.save(order);
-		return OrderResponse.from(order);
-	}
-
-	public void pay(final AuthPrincipal authPrincipal, final Long orderId, final OrderPayRequest request) {
-		orderPlaceService.place(authPrincipal, orderId);
+		orderPlaceService.place(authPrincipal.getId(), orderId);
 		orderPayService.pay(orderId, request.getPaymentKey());
 	}
 }

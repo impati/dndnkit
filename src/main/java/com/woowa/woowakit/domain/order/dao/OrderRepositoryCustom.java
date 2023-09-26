@@ -6,5 +6,5 @@ import com.woowa.woowakit.domain.order.domain.Order;
 
 public interface OrderRepositoryCustom {
 
-	List<Order> findOrdersByMemberId(Long memberId, Long lastOrderId, int pageSize);
+	List<Order> findOrdersByMemberId(final Long memberId, final Long lastOrderId, final int pageSize);
 }

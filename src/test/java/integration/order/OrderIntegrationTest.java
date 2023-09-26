@@ -127,7 +127,10 @@ class OrderIntegrationTest extends IntegrationTest {
 
 		//when
 		ExtractableResponse<Response> response = OrderHelper.payOrder(
-			OrderHelper.createOrderPayRequest(), orderId, accessToken);
+			OrderHelper.createOrderPayRequest(),
+			orderId,
+			accessToken
+		);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(400);

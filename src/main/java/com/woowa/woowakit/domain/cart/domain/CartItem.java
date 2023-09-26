@@ -2,6 +2,7 @@ package com.woowa.woowakit.domain.cart.domain;
 
 import java.util.Objects;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -42,6 +43,7 @@ public class CartItem extends BaseEntity {
 	private Product product;
 
 	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "quantity"))
 	private Quantity quantity;
 
 	@Builder

@@ -12,8 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.woowa.woowakit.domain.fixture.ProductFixture;
 import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
-import com.woowa.woowakit.domain.product.domain.product.ProductPrice;
 import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
 
 @SpringBootTest
@@ -55,9 +53,9 @@ class ExpirationDateProcessorTest {
 
 	private Product getProduct() {
 		return ProductFixture.getProductBuilder()
-			.price(ProductPrice.from(10000L))
+			.price(10000L)
 			.quantity(100)
-			.name(ProductName.from("된장 밀키트"))
+			.name("된장 밀키트")
 			.build();
 	}
 }

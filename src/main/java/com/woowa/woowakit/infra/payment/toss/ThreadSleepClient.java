@@ -3,7 +3,6 @@ package com.woowa.woowakit.infra.payment.toss;
 import java.time.Duration;
 import java.util.Random;
 
-import com.woowa.woowakit.domain.model.Money;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class ThreadSleepClient implements PaymentClient {
 	public Mono<Void> validatePayment(
 		final String paymentKey,
 		final String orderToken,
-		final Money totalPrice
+		final Long totalPrice
 	) {
 		long latancyMs =
 			(long)((LATENCY_MIN + STANDARD_DEVIATION * new Random().nextGaussian()) * 1000);

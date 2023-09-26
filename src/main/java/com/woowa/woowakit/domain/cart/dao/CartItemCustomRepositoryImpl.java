@@ -31,9 +31,7 @@ public class CartItemCustomRepositoryImpl implements CartItemCustomRepository {
 					product.name,
 					product.imageUrl,
 					product.id,
-					cartItem.id
-				)
-			)
+					cartItem.id))
 			.from(cartItem)
 			.join(cartItem.product, product)
 			.where(cartItem.memberId.eq(memberId))
@@ -51,9 +49,7 @@ public class CartItemCustomRepositoryImpl implements CartItemCustomRepository {
 					product.name,
 					product.imageUrl,
 					product.id,
-					cartItem.id
-				)
-			)
+					cartItem.id))
 			.from(cartItem)
 			.join(cartItem.product, product)
 			.where(cartItem.memberId.eq(memberId), cartItem.id.eq(id))

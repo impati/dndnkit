@@ -17,7 +17,6 @@ import com.woowa.woowakit.domain.auth.domain.Member;
 import com.woowa.woowakit.domain.fixture.ProductFixture;
 import com.woowa.woowakit.domain.member.fixture.MemberFixture;
 import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
 import com.woowa.woowakit.global.config.JpaConfig;
 import com.woowa.woowakit.global.config.QuerydslTestConfig;
 
@@ -121,7 +120,7 @@ class CartItemRepositoryTest {
 
 	private Product getProduct(final String productName) {
 		return ProductFixture.getProductBuilder()
-			.name(ProductName.from(productName))
+			.name(productName)
 			.build();
 	}
 

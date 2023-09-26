@@ -1,24 +1,29 @@
 package com.woowa.woowakit.domain.order.domain;
 
+import java.util.Objects;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.Image;
 import com.woowa.woowakit.domain.model.Money;
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.model.converter.ImageConverter;
-import com.woowa.woowakit.domain.model.converter.MoneyConverter;
-import com.woowa.woowakit.domain.model.converter.QuantityConverter;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.Objects;
-
-@Entity
-@Table(name = "order_items")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "order_items")
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem extends BaseEntity {
 
 	@Id
@@ -31,62 +36,60 @@ public class OrderItem extends BaseEntity {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "image")
-	@Convert(converter = ImageConverter.class)
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "image"))
 	private Image image;
 
-	@Column(name = "price")
-	@Convert(converter = MoneyConverter.class)
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "price"))
 	private Money price;
 
-	@Convert(converter = QuantityConverter.class)
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "quantity"))
 	private Quantity quantity;
 
 	@Builder
-	public OrderItem(
+	private OrderItem(
 		final Long productId,
 		final String name,
-		final Image image,
-		final Money price,
-		final Quantity quantity
+		final String image,
+		final long price,
+		final long quantity
 	) {
 		this.productId = productId;
 		this.name = name;
-		this.image = image;
-		this.price = price;
-		this.quantity = quantity;
-	}
-
-	public static OrderItem of(
-		final Long productId,
-		final String name,
-		final Image image,
-		final Money price,
-		final Quantity quantity
-	) {
-		return OrderItem.builder()
-			.productId(productId)
-			.name(name)
-			.image(image)
-			.price(price)
-			.quantity(quantity)
-			.build();
+		this.image = Image.from(image);
+		this.price = Money.from(price);
+		this.quantity = Quantity.from(quantity);
 	}
 
 	Money calculateTotalPrice() {
 		return price.multiply(quantity.getValue());
 	}
 
+	public long getPrice() {
+		return price.getValue();
+	}
+
+	public String getImage() {
+		return image.getValue();
+	}
+
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!(o instanceof OrderItem)) return false;
-		final OrderItem orderItem = (OrderItem) o;
-		return Objects.equals(id, orderItem.id);
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof OrderItem)) {
+			return false;
+		}
+
+		final OrderItem orderItem = (OrderItem)o;
+		return this.getId() != null && Objects.equals(getId(), orderItem.getId());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(getId());
 	}
 }
