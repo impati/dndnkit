@@ -15,8 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.woowa.woowakit.domain.cart.domain.CartItemRepository;
 import com.woowa.woowakit.domain.order.exception.OrderNotFoundException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 @SpringBootTest
 class OrderPlaceServiceTest {
@@ -91,7 +91,7 @@ class OrderPlaceServiceTest {
 		final String name,
 		final long price
 	) {
-		return productRepository.save(getProductBuilder()
+		return productRepository.save(getInStockProductBuilder()
 			.quantity(quantity)
 			.name(name)
 			.price(price)

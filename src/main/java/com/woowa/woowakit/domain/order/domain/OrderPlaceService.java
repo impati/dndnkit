@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.woowa.woowakit.domain.cart.domain.CartItemRepository;
 import com.woowa.woowakit.domain.order.exception.OrderNotFoundException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;

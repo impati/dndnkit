@@ -4,13 +4,10 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @Embeddable
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Money {
 
 	public static final Money ZERO = new Money(0L);
@@ -18,6 +15,17 @@ public class Money {
 	private Long value;
 
 	protected Money() {
+	}
+
+	private Money(final long value) {
+		validate(value);
+		this.value = value;
+	}
+
+	private void validate(final long value) {
+		if (value < 0) {
+			throw new MoneyNegativeException();
+		}
 	}
 
 	public static Money from(final Long value) {

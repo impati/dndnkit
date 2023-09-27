@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 import com.woowa.woowakit.domain.auth.domain.Member;
 import com.woowa.woowakit.domain.fixture.ProductFixture;
 import com.woowa.woowakit.domain.member.fixture.MemberFixture;
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 import com.woowa.woowakit.global.config.JpaConfig;
 import com.woowa.woowakit.global.config.QuerydslTestConfig;
 
@@ -119,13 +119,13 @@ class CartItemRepositoryTest {
 	}
 
 	private Product getProduct(final String productName) {
-		return ProductFixture.getProductBuilder()
+		return ProductFixture.getInStockProductBuilder()
 			.name(productName)
 			.build();
 	}
 
 	private Product getProduct() {
-		return ProductFixture.getProductBuilder().build();
+		return ProductFixture.getInStockProductBuilder().build();
 	}
 
 	private CartItem getCartItem(final Member member, final Product product) {

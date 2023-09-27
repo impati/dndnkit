@@ -3,8 +3,8 @@ package com.woowa.woowakit.domain.product.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductSpecification;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductSpecification;
 
 import lombok.AccessLevel;
 import lombok.Builder;

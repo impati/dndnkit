@@ -2,7 +2,7 @@ package com.woowa.woowakit.domain.cart.dao;
 
 import static com.querydsl.core.types.Projections.*;
 import static com.woowa.woowakit.domain.cart.domain.QCartItem.*;
-import static com.woowa.woowakit.domain.product.domain.product.QProduct.*;
+import static com.woowa.woowakit.domain.product.domain.QProduct.*;
 
 import java.util.List;
 import java.util.Optional;

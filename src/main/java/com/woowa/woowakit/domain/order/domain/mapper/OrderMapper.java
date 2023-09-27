@@ -13,8 +13,8 @@ import com.woowa.woowakit.domain.order.dto.request.OrderCreateRequest;
 import com.woowa.woowakit.domain.order.exception.ProductNotFoundException;
 import com.woowa.woowakit.domain.order.exception.ProductNotOnSaleException;
 import com.woowa.woowakit.domain.order.exception.QuantityNotEnoughException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

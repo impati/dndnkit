@@ -9,8 +9,8 @@ import com.woowa.woowakit.domain.cart.domain.CartItem;
 import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
 import com.woowa.woowakit.domain.order.domain.Order;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 

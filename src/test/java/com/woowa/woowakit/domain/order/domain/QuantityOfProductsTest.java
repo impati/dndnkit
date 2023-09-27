@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 
 class QuantityOfProductsTest {
 
@@ -47,7 +47,7 @@ class QuantityOfProductsTest {
 		final String name,
 		final long price
 	) {
-		return getProductBuilder()
+		return getInStockProductBuilder()
 			.id(id)
 			.quantity(quantity)
 			.name(name)

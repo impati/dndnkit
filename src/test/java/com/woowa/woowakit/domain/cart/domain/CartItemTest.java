@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.woowa.woowakit.domain.cart.exception.CartItemQuantityException;
 import com.woowa.woowakit.domain.cart.exception.InvalidProductInCartItemException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 
 class CartItemTest {
 
@@ -85,7 +85,7 @@ class CartItemTest {
 	}
 
 	private Product getProduct(final long quantity, final ProductStatus productStatus) {
-		return getProductBuilder()
+		return getInStockProductBuilder()
 			.quantity(quantity)
 			.status(productStatus)
 			.build();
