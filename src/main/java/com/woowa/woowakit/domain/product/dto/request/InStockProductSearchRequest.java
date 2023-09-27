@@ -6,7 +6,7 @@ import javax.validation.constraints.Min;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.woowa.woowakit.domain.product.domain.product.InStockProductSearchCondition;
+import com.woowa.woowakit.domain.product.domain.InStockProductSearchCondition;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

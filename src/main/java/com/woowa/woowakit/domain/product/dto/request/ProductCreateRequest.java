@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,10 @@ public class ProductCreateRequest {
 	}
 
 	public Product toEntity() {
-		return Product.of(name, price, imageUrl);
+		return Product.builder()
+			.imageUrl(imageUrl)
+			.name(name)
+			.price(price)
+			.build();
 	}
 }

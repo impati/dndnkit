@@ -2,7 +2,7 @@ package com.woowa.woowakit.domain.product.dto.request;
 
 import javax.validation.constraints.Min;
 
-import com.woowa.woowakit.domain.product.domain.product.AllProductSearchCondition;
+import com.woowa.woowakit.domain.product.domain.AllProductSearchCondition;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,6 @@ public class AllProductSearchRequest {
 	private static final int DEFAULT_PAGE_SIZE = 20;
 
 	private String productKeyword;
-
 	private Long lastProductId;
 
 	@Min(value = 1, message = "최소 1개 이상의 상품을 조회해야합니다.")

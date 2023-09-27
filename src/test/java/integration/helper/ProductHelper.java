@@ -2,19 +2,21 @@ package integration.helper;
 
 import java.time.LocalDate;
 
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 import com.woowa.woowakit.domain.product.dto.request.ProductCreateRequest;
 import com.woowa.woowakit.domain.product.dto.request.ProductStatusUpdateRequest;
-import com.woowa.woowakit.domain.product.dto.request.StockCreateRequest;
 import com.woowa.woowakit.domain.product.dto.response.ProductResponse;
+import com.woowa.woowakit.domain.stock.dto.request.StockCreateRequest;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 public class ProductHelper {
 
-	public static String createProduct(final ProductCreateRequest request,
-		final String adminAccessToken) {
+	public static String createProduct(
+		final ProductCreateRequest request,
+		final String adminAccessToken
+	) {
 		return CommonRestAssuredUtils.post("/products", request, adminAccessToken)
 			.header("location");
 	}
@@ -24,7 +26,7 @@ public class ProductHelper {
 		final StockCreateRequest request,
 		final String adminAccessToken
 	) {
-		return CommonRestAssuredUtils.post(location + "/stocks", request, adminAccessToken);
+		return CommonRestAssuredUtils.post("/stocks/" + getIdFrom(location), request, adminAccessToken);
 	}
 
 	public static ExtractableResponse<Response> updateProductStatus(
@@ -42,15 +44,11 @@ public class ProductHelper {
 	}
 
 	public static ProductCreateRequest createProductCreateRequest() {
-		return ProductCreateRequest.of("test1", 3000L, "testImage");
+		return ProductCreateRequest.of("test1", 3000L, "https://testImage");
 	}
 
 	public static ProductCreateRequest createProductCreateRequest2() {
-		return ProductCreateRequest.of("test2", 7000L, "testImage");
-	}
-
-	public static ProductCreateRequest createProductCreateRequest3() {
-		return ProductCreateRequest.of("test3", 10000L, "testImage");
+		return ProductCreateRequest.of("test2", 7000L, "https://testImage");
 	}
 
 	public static StockCreateRequest createStockCreateRequest(long quantity) {

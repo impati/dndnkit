@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

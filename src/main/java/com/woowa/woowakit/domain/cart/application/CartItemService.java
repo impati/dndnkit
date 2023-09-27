@@ -13,8 +13,8 @@ import com.woowa.woowakit.domain.cart.dto.CartItemUpdateQuantityRequest;
 import com.woowa.woowakit.domain.cart.exception.CartItemNotExistException;
 import com.woowa.woowakit.domain.cart.exception.NotMyCartItemException;
 import com.woowa.woowakit.domain.cart.exception.ProductNotExistException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

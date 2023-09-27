@@ -14,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.woowa.woowakit.domain.cart.domain.CartItem;
 import com.woowa.woowakit.domain.order.domain.Order;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 
 @SpringBootTest
 class CartItemMapperTest {
@@ -53,7 +53,7 @@ class CartItemMapperTest {
 	private Product getProduct(
 		final long price
 	) {
-		return productRepository.save(getProductBuilder()
+		return productRepository.save(getInStockProductBuilder()
 			.price(price)
 			.quantity(100)
 			.status(ProductStatus.IN_STOCK)

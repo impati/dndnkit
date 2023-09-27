@@ -17,9 +17,9 @@ import com.woowa.woowakit.domain.order.dto.request.OrderCreateRequest;
 import com.woowa.woowakit.domain.order.exception.ProductNotFoundException;
 import com.woowa.woowakit.domain.order.exception.ProductNotOnSaleException;
 import com.woowa.woowakit.domain.order.exception.QuantityNotEnoughException;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 
 @DisplayName("OrderMapper 단위 테스트")
 @SpringBootTest
@@ -94,13 +94,13 @@ class OrderMapperTest {
 	}
 
 	private Product getSoldOutProduct() {
-		return productRepository.save(getProductBuilder()
+		return productRepository.save(getInStockProductBuilder()
 			.status(ProductStatus.SOLD_OUT)
 			.build());
 	}
 
 	private Product getProduct(final long quantity) {
-		return productRepository.save(getProductBuilder()
+		return productRepository.save(getInStockProductBuilder()
 			.quantity(quantity)
 			.status(ProductStatus.IN_STOCK)
 			.build());
@@ -110,7 +110,7 @@ class OrderMapperTest {
 		final long price,
 		final String productName
 	) {
-		return productRepository.save(getProductBuilder()
+		return productRepository.save(getInStockProductBuilder()
 			.price(price)
 			.name(productName)
 			.quantity(100)

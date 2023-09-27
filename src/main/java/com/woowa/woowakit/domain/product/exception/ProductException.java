@@ -2,26 +2,31 @@ package com.woowa.woowakit.domain.product.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com.woowa.woowakit.global.error.WooWaException;
+public class ProductException extends RuntimeException {
 
-public class ProductException extends WooWaException {
-	public ProductException(HttpStatus httpStatus) {
-		super(httpStatus);
-	}
+	private final HttpStatus httpStatus;
 
 	public ProductException(String message, Throwable cause) {
 		super(message, cause);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
 	public ProductException(String message, Throwable cause, HttpStatus httpStatus) {
-		super(message, cause, httpStatus);
+		super(message, cause);
+		this.httpStatus = httpStatus;
 	}
 
 	public ProductException(String message) {
 		super(message);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
 	public ProductException(String message, HttpStatus httpStatus) {
-		super(message, httpStatus);
+		super(message);
+		this.httpStatus = httpStatus;
+	}
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
 	}
 }

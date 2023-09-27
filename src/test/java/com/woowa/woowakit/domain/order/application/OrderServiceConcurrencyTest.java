@@ -23,8 +23,8 @@ import com.woowa.woowakit.domain.member.fixture.MemberFixture;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
 import com.woowa.woowakit.domain.order.dto.request.OrderCreateRequest;
 import com.woowa.woowakit.domain.order.dto.request.OrderPayRequest;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import reactor.core.publisher.Mono;
 
@@ -81,6 +81,6 @@ class OrderServiceConcurrencyTest {
 	}
 
 	private static Product getProduct() {
-		return getProductBuilder().build();
+		return getInStockProductBuilder().build();
 	}
 }

@@ -18,7 +18,7 @@ import com.woowa.woowakit.domain.cart.exception.CartItemQuantityException;
 import com.woowa.woowakit.domain.cart.exception.InvalidProductInCartItemException;
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 
 import lombok.AccessLevel;
 import lombok.Builder;
