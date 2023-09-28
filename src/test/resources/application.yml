@@ -51,5 +51,5 @@ cloud:
 logging:
   level:
     org:
-      springframework: error
-    root: error
+      springframework: info
+    root: info
