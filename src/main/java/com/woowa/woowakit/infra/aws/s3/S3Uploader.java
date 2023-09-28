@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class S3Uploader {
 
 	private final AmazonS3Client amazonS3Client;
@@ -29,7 +29,7 @@ public class S3Uploader {
 
 	public String upload(final MultipartFile multipartFile, final String fileName) throws IOException {
 		File uploadFile = convert(multipartFile)
-			.orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 로 전환이 실패했습니다."));
 
 		return upload(uploadFile, fileName);
 	}

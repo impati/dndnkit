@@ -16,7 +16,7 @@ public class PayConfig {
 	@Profile("prod | local")
 	@Bean
 	public PaymentClient paymentClient() {
-		return new ThreadSleepClient(monoDelay());
+		return new ThreadSleepClient();
 	}
 
 	@Bean
