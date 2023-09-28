@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommonExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> exceptionHandler(final RuntimeException exception) {
+	public ResponseEntity<ErrorResponse> exceptionHandler(final Exception exception) {
 		log.error("예상하지 못한 에러입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -34,7 +34,8 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ErrorResponse> illegalArgumentExceptionHandler(
-		final IllegalArgumentException exception) {
+		final IllegalArgumentException exception
+	) {
 		log.warn("잘못된 요청입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
@@ -113,7 +114,8 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> sqlIntegrityConstraintViolationExceptionHandler(
-		final SQLIntegrityConstraintViolationException exception) {
+		final SQLIntegrityConstraintViolationException exception
+	) {
 		log.warn("잘못된 요청입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.CONFLICT)

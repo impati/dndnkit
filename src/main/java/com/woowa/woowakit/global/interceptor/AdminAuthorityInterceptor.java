@@ -19,8 +19,11 @@ public class AdminAuthorityInterceptor implements HandlerInterceptor {
 	private static final String MEMBER_KEY = "memberId";
 
 	@Override
-	public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response,
-		final Object handler) {
+	public boolean preHandle(
+		final HttpServletRequest request,
+		final HttpServletResponse response,
+		final Object handler
+	) {
 		if (!(handler instanceof HandlerMethod)) {
 			return true;
 		}
