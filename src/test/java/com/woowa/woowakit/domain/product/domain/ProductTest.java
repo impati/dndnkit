@@ -2,6 +2,8 @@ package com.woowa.woowakit.domain.product.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -94,6 +96,44 @@ class ProductTest {
 		assertThat(product.getStatus()).isEqualTo(ProductStatus.SOLD_OUT);
 	}
 
+	@Test
+	@DisplayName("상품의 브랜드를 별도로 설정하지 않으면 NONE 이다.")
+	void NoConfigureProductBrandThenNone() {
+		Product product = getProduct();
+
+		assertThat(product.getProductBrand()).isEqualTo(ProductBrand.NONE);
+	}
+
+	@Test
+	@DisplayName("상품의 브랜드를 설정할 수 있다.")
+	void configureProductBrand() {
+		ProductBrand brand = ProductBrand.MYCHEF;
+		Product product = getProduct(brand);
+
+		assertThat(product.getProductBrand()).isEqualTo(brand);
+	}
+
+	@Test
+	@DisplayName("상품의 카테고리를 별도로 설정하지 않으면 ETC 이다.")
+	void NoConfigureProductCategoryThenETC() {
+		Product product = getProduct();
+
+		assertThat(product.getCategories())
+			.hasSize(1)
+			.contains(ProductCategory.ETC);
+	}
+
+	@Test
+	@DisplayName("상품의 카테고리를 여러개 설정할 수 있다.")
+	void configureProductCategory() {
+		List<ProductCategory> categories = List.of(ProductCategory.CHINESE, ProductCategory.WESTERN);
+		Product product = getProduct(categories);
+
+		assertThat(product.getCategories())
+			.hasSize(2)
+			.contains(ProductCategory.CHINESE, ProductCategory.WESTERN);
+	}
+
 	private Product getInStockProduct(final ProductStatus status) {
 		return ProductFixture.getInStockProductBuilder()
 			.status(status)
@@ -103,6 +143,18 @@ class ProductTest {
 	private Product getInStockProduct(final long quantity) {
 		return ProductFixture.getInStockProductBuilder()
 			.quantity(quantity)
+			.build();
+	}
+
+	private Product getProduct(final ProductBrand brand) {
+		return ProductFixture.getProductBuilder()
+			.productBrand(brand)
+			.build();
+	}
+
+	private Product getProduct(final List<ProductCategory> productCategories) {
+		return ProductFixture.getProductBuilder()
+			.productCategories(productCategories)
 			.build();
 	}
 
