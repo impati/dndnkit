@@ -1,9 +1,14 @@
 package com.woowa.woowakit.domain.product.domain;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +23,7 @@ import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.product.exception.UpdateProductStatusFailException;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,13 +58,25 @@ public class Product extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private ProductStatus status;
 
+	@ElementCollection
+	@Column(name = "category")
+	@Enumerated(EnumType.STRING)
+	private Set<ProductCategory> categories = new HashSet<>();
+
+	@Column(name = "brand")
+	@Enumerated(EnumType.STRING)
+	private ProductBrand productBrand;
+
+	@Builder
 	private Product(
 		final Long id,
 		final String name,
 		final long price,
 		final String imageUrl,
 		final ProductStatus status,
-		final long quantity
+		final long quantity,
+		final ProductBrand productBrand,
+		final List<ProductCategory> productCategories
 	) {
 		this.id = id;
 		this.name = ProductName.from(name);
@@ -66,6 +84,15 @@ public class Product extends BaseEntity {
 		this.imageUrl = ProductImage.from(imageUrl);
 		this.status = status;
 		this.quantity = Quantity.from(quantity);
+		this.productBrand = productBrand;
+		this.categories = setCategories(productCategories);
+	}
+
+	private HashSet<ProductCategory> setCategories(final List<ProductCategory> productCategories) {
+		if (productCategories.isEmpty()) {
+			return new HashSet<>(List.of(ProductCategory.ETC));
+		}
+		return new HashSet<>(productCategories);
 	}
 
 	public void updateProductStatus(final ProductStatus productStatus) {
@@ -127,6 +154,8 @@ public class Product extends BaseEntity {
 		private String imageUrl;
 		private ProductStatus status = ProductStatus.PRE_REGISTRATION;
 		private long quantity;
+		private ProductBrand productBrand = ProductBrand.NONE;
+		private List<ProductCategory> productCategories = new ArrayList<>();
 
 		ProductBuilder() {
 		}
@@ -161,8 +190,25 @@ public class Product extends BaseEntity {
 			return this;
 		}
 
+		public ProductBuilder productBrand(final ProductBrand productBrand) {
+			this.productBrand = productBrand;
+			return this;
+		}
+
+		public ProductBuilder productCategories(final List<ProductCategory> productCategories) {
+			this.productCategories = productCategories;
+			return this;
+		}
+
 		public Product build() {
-			return new Product(this.id, this.name, this.price, this.imageUrl, this.status, this.quantity);
+			return new Product(this.id, this.name, this.price, this.imageUrl, this.status, this.quantity,
+				this.productBrand, this.productCategories);
+		}
+
+		public String toString() {
+			return "Product.ProductBuilder(id=" + this.id + ", name=" + this.name + ", price=" + this.price
+				+ ", imageUrl=" + this.imageUrl + ", status=" + this.status + ", quantity=" + this.quantity
+				+ ", productBrand=" + this.productBrand + ", productCategories=" + this.productCategories + ")";
 		}
 	}
 
