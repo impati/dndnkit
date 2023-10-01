@@ -19,13 +19,16 @@ public class OrderResponse {
 	private List<OrderItemResponse> orderItems;
 	private String uuid;
 
-	public static OrderResponse of(final Long id, final List<OrderItemResponse> orderItems,
-		final String uuid) {
+	public static OrderResponse of(
+		final Long id,
+		final List<OrderItemResponse> orderItems,
+		final String uuid
+	) {
 		return new OrderResponse(id, orderItems, uuid);
 	}
 
 	public static OrderResponse from(final Order order) {
-		List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream()
+		final List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream()
 			.map(OrderItemResponse::from)
 			.collect(Collectors.toUnmodifiableList());
 

@@ -1,6 +1,6 @@
 package com.woowa.woowakit.domain.product.dto.response;
 
-import com.woowa.woowakit.domain.product.domain.product.Product;
+import com.woowa.woowakit.domain.product.domain.Product;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,10 +38,10 @@ public class ProductDetailResponse {
 	public static ProductDetailResponse from(final Product product) {
 		return ProductDetailResponse.builder()
 			.id(product.getId())
-			.name(product.getName().getName())
-			.price(product.getPrice().getPrice().getValue())
-			.imageUrl(product.getImageUrl().getPath())
-			.quantity(product.getQuantity().getValue())
+			.name(product.getName())
+			.price(product.getPrice())
+			.imageUrl(product.getImageUrl())
+			.quantity(product.getQuantity())
 			.status(product.getStatus().name())
 			.build();
 	}

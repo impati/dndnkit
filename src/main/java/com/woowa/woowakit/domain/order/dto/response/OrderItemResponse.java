@@ -35,8 +35,8 @@ public class OrderItemResponse {
 			orderItem.getId(),
 			orderItem.getProductId(),
 			orderItem.getName(),
-			orderItem.getImage().getValue(),
-			orderItem.getPrice().getValue(),
+			orderItem.getImage(),
+			orderItem.getPrice(),
 			orderItem.getQuantity().getValue()
 		);
 	}

@@ -1,9 +1,9 @@
 package com.woowa.woowakit.domain.cart.domain;
 
 import com.woowa.woowakit.domain.model.Quantity;
-import com.woowa.woowakit.domain.product.domain.product.ProductImage;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
-import com.woowa.woowakit.domain.product.domain.product.ProductPrice;
+import com.woowa.woowakit.domain.product.domain.ProductImage;
+import com.woowa.woowakit.domain.product.domain.ProductName;
+import com.woowa.woowakit.domain.product.domain.ProductPrice;
 
 import lombok.Getter;
 
@@ -27,8 +27,8 @@ public class CartItemSpecification {
 	) {
 		this.quantity = quantity.getValue();
 		this.productPrice = productPrice.getPrice().getValue();
-		this.productName = productName.getName();
-		this.productImage = productImage.getPath();
+		this.productName = productName.getValue();
+		this.productImage = productImage.getValue();
 		this.productId = productId;
 		this.cartItemId = cartItemId;
 	}

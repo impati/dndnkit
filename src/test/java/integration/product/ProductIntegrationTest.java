@@ -10,11 +10,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 import com.woowa.woowakit.domain.product.dto.request.ProductCreateRequest;
 import com.woowa.woowakit.domain.product.dto.request.ProductStatusUpdateRequest;
-import com.woowa.woowakit.domain.product.dto.request.StockCreateRequest;
 import com.woowa.woowakit.domain.product.dto.response.ProductResponse;
+import com.woowa.woowakit.domain.stock.dto.request.StockCreateRequest;
 
 import integration.IntegrationTest;
 import integration.helper.CommonRestAssuredUtils;
@@ -55,7 +55,7 @@ class ProductIntegrationTest extends IntegrationTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		ProductResponse detailResponse = response.as(ProductResponse.class);
 		assertThat(detailResponse).extracting("quantity").isEqualTo(0L);
-		assertThat(detailResponse).extracting("imageUrl").isEqualTo("testImage");
+		assertThat(detailResponse).extracting("imageUrl").isEqualTo("https://testImage");
 		assertThat(detailResponse).extracting("status").isEqualTo("PRE_REGISTRATION");
 	}
 
@@ -134,7 +134,6 @@ class ProductIntegrationTest extends IntegrationTest {
 		//then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(response.header("Location")).matches("^/products/[0-9]+/stocks/[0-9]+$");
-
 		ProductResponse productResponse = CommonRestAssuredUtils.get(location).as(ProductResponse.class);
 		assertThat(productResponse).extracting("quantity").isEqualTo(5L);
 	}

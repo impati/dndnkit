@@ -23,20 +23,14 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.product.application.ProductService;
-import com.woowa.woowakit.domain.product.application.StockService;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductImage;
-import com.woowa.woowakit.domain.product.domain.product.ProductName;
-import com.woowa.woowakit.domain.product.domain.product.ProductPrice;
-import com.woowa.woowakit.domain.product.domain.product.ProductSpecification;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductSpecification;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 import com.woowa.woowakit.domain.product.dto.request.AllProductSearchRequest;
 import com.woowa.woowakit.domain.product.dto.request.InStockProductSearchRequest;
 import com.woowa.woowakit.domain.product.dto.request.ProductCreateRequest;
 import com.woowa.woowakit.domain.product.dto.request.ProductStatusUpdateRequest;
-import com.woowa.woowakit.domain.product.dto.request.StockCreateRequest;
 import com.woowa.woowakit.domain.product.dto.response.ProductDetailResponse;
 import com.woowa.woowakit.domain.product.dto.response.ProductResponse;
 import com.woowa.woowakit.restDocsHelper.PathParam;
@@ -54,9 +48,6 @@ class ProductControllerTest extends RestDocsTest {
 
 	@MockBean
 	private ProductService productService;
-
-	@MockBean
-	private StockService stockService;
 
 	@Autowired
 	private ObjectMapper autowiredObjectMapper;
@@ -230,29 +221,6 @@ class ProductControllerTest extends RestDocsTest {
 			.andDo(authorizationDocument("product/status", pathParam, requestFields));
 	}
 
-	@Test
-	@DisplayName("[POST] [/products/{id}/stocks] 상품 재고 추가 테스트 및 문서화")
-	void addStock() throws Exception {
-		PathParam pathParam = new PathParam("id", "재고 ID");
-		RequestFields requestFields = new RequestFields(Map.of(
-			"expiryDate", "유통 기한",
-			"quantity", "재고 수량"
-		));
-
-		Long stockId = 1L;
-		String token = getToken();
-		StockCreateRequest request = StockCreateRequest.of(LocalDate.of(2025, 1, 1), 10000L);
-		given(stockService.create(any(), any())).willReturn(stockId);
-
-		mockMvc.perform(post("/products/{id}/stocks", stockId)
-				.header(HttpHeaders.AUTHORIZATION, token)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(autowiredObjectMapper.writeValueAsString(request)))
-			.andExpect(status().isCreated())
-			.andExpect(handler().methodName("addStock"))
-			.andDo(authorizationDocument("stock/add", pathParam, requestFields));
-	}
-
 	private ProductSpecification getProductSpecification() {
 		return ProductSpecification.of(getProduct(), 109);
 	}
@@ -260,10 +228,10 @@ class ProductControllerTest extends RestDocsTest {
 	private Product getProduct() {
 		return Product.builder()
 			.status(ProductStatus.IN_STOCK)
-			.quantity(Quantity.from(1000))
-			.price(ProductPrice.from(10000L))
-			.name(ProductName.from("된장 밀키트"))
-			.imageUrl(ProductImage.from("https://service-hub/file/log/"))
+			.quantity(1000)
+			.price(10000L)
+			.name("된장 밀키트")
+			.imageUrl("https://service-hub/file/log/")
 			.build();
 	}
 }

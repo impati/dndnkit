@@ -8,29 +8,20 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+import com.woowa.woowakit.domain.cart.dao.CartItemCustomRepository;
 
-	Optional<CartItem> findCartItemByMemberIdAndProductId(Long memberId, Long productId);
+public interface CartItemRepository extends JpaRepository<CartItem, Long>, CartItemCustomRepository {
 
-	@Query(
-		" select new com.woowa.woowakit.domain.cart.domain.CartItemSpecification(c.quantity, p.price, p.name, p.imageUrl, p.id, c.id)"
-			+ "  from CartItem c"
-			+ "  join Product p on p.id = c.productId "
-			+ "  where c.memberId = :memberId")
-	List<CartItemSpecification> findCartItemByMemberId(@Param("memberId") Long memberId);
-
-	@Query(
-		"select new com.woowa.woowakit.domain.cart.domain.CartItemSpecification(c.quantity, p.price, p.name, p.imageUrl, p.id, c.id)"
-			+ " from CartItem c "
-			+ " join Product p on p.id = c.productId "
-			+ " where c.memberId = :memberId and c.id = :id")
-	Optional<CartItemSpecification> findCartItemByIdAndMemberId(@Param("memberId") Long memberId, @Param("id") Long id);
+	Optional<CartItem> findCartItemByMemberIdAndProductId(final Long memberId, final Long productId);
 
 	@Modifying
-	@Query("delete from CartItem c where c.productId in :productIds and c.memberId = :memberId")
-	void deleteAllByProductIdAndMemberId(@Param("memberId") Long memberId, @Param("productIds") List<Long> productIds);
+	@Query("delete from CartItem c where c.product.id in :productIds and c.memberId = :memberId")
+	void deleteAllByProductIdAndMemberId(
+		@Param("memberId") final Long memberId,
+		@Param("productIds") final List<Long> productIds
+	);
 
 	@Modifying
 	@Query("delete from CartItem c where c.id in :cartItemIds and c.memberId = :memberId")
-	void deleteCartItems(@Param("memberId") Long memberId, @Param("cartItemIds") List<Long> cartItemIds);
+	void deleteCartItems(@Param("memberId") final Long memberId, @Param("cartItemIds") final List<Long> cartItemIds);
 }

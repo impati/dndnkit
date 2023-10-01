@@ -25,12 +25,16 @@ public class OrderDetailResponse {
 		return new OrderDetailResponse(
 			order.getId(),
 			order.getOrderStatus().name(),
-			order.getTotalPrice().getValue(),
+			order.getTotalPrice(),
 			order.getUuid(),
-			order.getOrderItems().stream()
-				.map(OrderItemResponse::from)
-				.collect(Collectors.toUnmodifiableList())
+			convertOrderItemResponse(order)
 		);
+	}
+
+	private static List<OrderItemResponse> convertOrderItemResponse(final Order order) {
+		return order.getOrderItems().stream()
+			.map(OrderItemResponse::from)
+			.collect(Collectors.toUnmodifiableList());
 	}
 
 	public static List<OrderDetailResponse> listOf(final List<Order> orders) {

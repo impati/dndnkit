@@ -3,7 +3,7 @@ package com.woowa.woowakit.global.error;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -11,12 +11,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.woowa.woowakit.domain.auth.exception.MemberException;
+import com.woowa.woowakit.domain.cart.exception.CartException;
+import com.woowa.woowakit.domain.order.exception.OrderException;
+import com.woowa.woowakit.domain.product.exception.ProductException;
+import com.woowa.woowakit.domain.stock.exception.StockException;
+
+import lombok.extern.slf4j.Slf4j;
+
 @RestControllerAdvice
 @Slf4j
 public class CommonExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> exceptionHandler(final RuntimeException exception) {
+	public ResponseEntity<ErrorResponse> exceptionHandler(final Exception exception) {
 		log.error("예상하지 못한 에러입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -26,7 +34,8 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ErrorResponse> illegalArgumentExceptionHandler(
-		final IllegalArgumentException exception) {
+		final IllegalArgumentException exception
+	) {
 		log.warn("잘못된 요청입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
@@ -36,6 +45,46 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(WooWaException.class)
 	public ResponseEntity<ErrorResponse> wooWaExceptionHandler(final WooWaException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(MemberException.class)
+	public ResponseEntity<ErrorResponse> memberExceptionHandler(final MemberException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(CartException.class)
+	public ResponseEntity<ErrorResponse> cartItemExceptionHandler(final CartException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(OrderException.class)
+	public ResponseEntity<ErrorResponse> orderExceptionHandler(final OrderException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(ProductException.class)
+	public ResponseEntity<ErrorResponse> productExceptionHandler(final ProductException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(StockException.class)
+	public ResponseEntity<ErrorResponse> stockExceptionHandler(final StockException exception) {
 		log.info(exception.getMessage());
 		return ResponseEntity
 			.status(exception.getHttpStatus())
@@ -57,7 +106,7 @@ public class CommonExceptionHandler {
 
 	private List<String> getFieldErrorMessages(final MethodArgumentNotValidException ex) {
 		return ex.getBindingResult().getAllErrors().stream().map(error -> {
-			String fieldName = ((FieldError) error).getField();
+			String fieldName = ((FieldError)error).getField();
 			String message = error.getDefaultMessage();
 			return fieldName + ": " + message;
 		}).collect(Collectors.toUnmodifiableList());
@@ -65,7 +114,8 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<ErrorResponse> sqlIntegrityConstraintViolationExceptionHandler(
-		final SQLIntegrityConstraintViolationException exception) {
+		final SQLIntegrityConstraintViolationException exception
+	) {
 		log.warn("잘못된 요청입니다.", exception);
 		return ResponseEntity
 			.status(HttpStatus.CONFLICT)

@@ -15,7 +15,7 @@ import com.woowa.woowakit.domain.order.domain.OrderStatus;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
 import com.woowa.woowakit.domain.order.dto.response.OrderDetailResponse;
 import com.woowa.woowakit.domain.order.dto.response.OrderResponse;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 import com.woowa.woowakit.global.error.ErrorResponse;
 
 import integration.IntegrationTest;
@@ -127,7 +127,10 @@ class OrderIntegrationTest extends IntegrationTest {
 
 		//when
 		ExtractableResponse<Response> response = OrderHelper.payOrder(
-			OrderHelper.createOrderPayRequest(), orderId, accessToken);
+			OrderHelper.createOrderPayRequest(),
+			orderId,
+			accessToken
+		);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(400);

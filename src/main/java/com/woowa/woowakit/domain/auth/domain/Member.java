@@ -1,15 +1,22 @@
 package com.woowa.woowakit.domain.auth.domain;
 
-import com.woowa.woowakit.domain.auth.domain.converter.EmailConverter;
-import com.woowa.woowakit.domain.auth.domain.converter.PasswordConverter;
+import java.util.Objects;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.woowa.woowakit.domain.auth.exception.LoginFailException;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.Objects;
 
 @Getter
 @Entity
@@ -21,16 +28,14 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "email", nullable = false, unique = true)
-	@Convert(converter = EmailConverter.class)
+	@Embedded
 	private Email email;
 
-	@Column(name = "password", nullable = false)
-	@Convert(converter = PasswordConverter.class)
+	@Embedded
 	private EncodedPassword encodedPassword;
 
-	@Column(name = "name", nullable = false, length = 255)
-	private String name;
+	@Embedded
+	private MemberName name;
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
@@ -44,16 +49,8 @@ public class Member {
 	) {
 		this.email = email;
 		this.encodedPassword = encodedPassword;
-		this.name = name;
+		this.name = MemberName.from(name);
 		this.role = role;
-	}
-
-	public static Member of(
-		final String email,
-		final EncodedPassword encodedPassword,
-		final String name
-	) {
-		return new Member(Email.from(email), encodedPassword, name, Role.USER);
 	}
 
 	public void validatePassword(final String password, final PasswordEncoder passwordEncoder) {
@@ -62,11 +59,28 @@ public class Member {
 		}
 	}
 
+	public String getEmail() {
+		return email.getValue();
+	}
+
+	public String getRoleName() {
+		return role.name();
+	}
+
+	public String getName() {
+		return name.getValue();
+	}
+
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Member)) return false;
-		final Member member = (Member) o;
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Member)) {
+			return false;
+		}
+
+		final Member member = (Member)o;
 		return Objects.equals(id, member.id);
 	}
 

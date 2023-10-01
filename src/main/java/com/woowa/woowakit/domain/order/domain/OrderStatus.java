@@ -4,5 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-	ORDERED, PLACED, CANCELED, PAYED,
+
+	ORDERED, PLACED, CANCELED, PAYED;
 }

@@ -2,14 +2,20 @@ package com.woowa.woowakit.domain.model;
 
 import java.util.Objects;
 
+import javax.persistence.Embeddable;
+
 import com.woowa.woowakit.domain.product.exception.ProductQuantityNegativeException;
 
 import lombok.Getter;
 
 @Getter
+@Embeddable
 public class Quantity {
 
-	private final long value;
+	private long value;
+
+	protected Quantity() {
+	}
 
 	private Quantity(final long value) {
 		validNotNegative(value);
@@ -26,8 +32,8 @@ public class Quantity {
 		}
 	}
 
-	public Quantity add(final Quantity other) {
-		return Quantity.from(value + other.value);
+	public Quantity add(final long quantity) {
+		return Quantity.from(value + quantity);
 	}
 
 	public Quantity subtract(final Quantity other) {
@@ -54,6 +60,7 @@ public class Quantity {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
+
 		Quantity that = (Quantity)o;
 		return value == that.value;
 	}

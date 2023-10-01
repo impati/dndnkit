@@ -1,8 +1,8 @@
 package com.woowa.woowakit.domain.product.dao;
 
 import static com.woowa.woowakit.domain.order.domain.QOrder.*;
-import static com.woowa.woowakit.domain.product.domain.product.QProduct.*;
-import static com.woowa.woowakit.domain.product.domain.product.QProductSales.*;
+import static com.woowa.woowakit.domain.product.domain.QProduct.*;
+import static com.woowa.woowakit.domain.product.domain.QProductSales.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,11 +13,11 @@ import org.springframework.util.StringUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.InStockProductSearchCondition;
-import com.woowa.woowakit.domain.product.domain.product.ProductSpecification;
-import com.woowa.woowakit.domain.product.domain.product.ProductStatus;
-import com.woowa.woowakit.domain.product.domain.product.AllProductSearchCondition;
+import com.woowa.woowakit.domain.product.domain.AllProductSearchCondition;
+import com.woowa.woowakit.domain.product.domain.InStockProductSearchCondition;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductSpecification;
+import com.woowa.woowakit.domain.product.domain.ProductStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,13 +29,15 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 	@Override
 	public List<ProductSpecification> searchInStockProducts(final InStockProductSearchCondition condition) {
-		return jpaQueryFactory.select(
+		return jpaQueryFactory
+			.select(
 				Projections.constructor(ProductSpecification.class,
 					product,
-					productSales.sale.value)
-			)
+					productSales.sale.value))
 			.from(product)
-			.leftJoin(productSales).on(product.id.eq(productSales.productId).and(saleNow(condition.getSaleDate()))).fetchJoin()
+			.leftJoin(productSales)
+			.on(product.id.eq(productSales.productId).and(saleNow(condition.getSaleDate())))
+			.fetchJoin()
 			.where(
 				containsName(condition.getProductKeyword()),
 				sale(condition.getLastProductSale(), condition.getLastProductId()),
@@ -56,7 +58,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 		if (productId == null) {
 			return null;
 		}
-
 		if (sale == null) {
 			return product.id.gt(productId);
 		}
@@ -66,17 +67,17 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 	@Override
 	public List<Product> searchAllProducts(final AllProductSearchCondition condition) {
-		return jpaQueryFactory.selectFrom(product)
+		return jpaQueryFactory
+			.selectFrom(product)
 			.where(
 				containsName(condition.getProductKeyword()),
-				cursorId(condition.getLastProductId())
-			)
+				cursorId(condition.getLastProductId()))
 			.orderBy(product.id.asc())
 			.limit(condition.getPageSize())
 			.fetch();
 	}
 
-	private BooleanExpression cursorId(Long cursorId) {
+	private BooleanExpression cursorId(final Long cursorId) {
 		if (cursorId == null) {
 			return null;
 		}
@@ -86,7 +87,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 	private BooleanExpression containsName(final String productKeyword) {
 		if (StringUtils.hasText(productKeyword)) {
-			return product.name.name.containsIgnoreCase(productKeyword);
+			return product.name.value.containsIgnoreCase(productKeyword);
 		}
 
 		return null;

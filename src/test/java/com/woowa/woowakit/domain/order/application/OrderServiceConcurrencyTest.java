@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.order.application;
 
+import static com.woowa.woowakit.domain.fixture.ProductFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -18,24 +19,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.woowa.woowakit.domain.auth.domain.AuthPrincipal;
 import com.woowa.woowakit.domain.auth.domain.Member;
 import com.woowa.woowakit.domain.auth.domain.MemberRepository;
-import com.woowa.woowakit.domain.cart.domain.CartItemRepository;
 import com.woowa.woowakit.domain.member.fixture.MemberFixture;
-import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
 import com.woowa.woowakit.domain.order.dto.request.OrderCreateRequest;
 import com.woowa.woowakit.domain.order.dto.request.OrderPayRequest;
-import com.woowa.woowakit.domain.product.domain.product.Product;
-import com.woowa.woowakit.domain.product.domain.product.ProductRepository;
-import com.woowa.woowakit.domain.product.fixture.ProductFixture;
+import com.woowa.woowakit.domain.product.domain.Product;
+import com.woowa.woowakit.domain.product.domain.ProductRepository;
 
 import reactor.core.publisher.Mono;
 
 @SpringBootTest
 @DisplayName("OrderService 동시성 테스트")
 class OrderServiceConcurrencyTest {
-
-	@Autowired
-	private CartItemRepository cartItemRepository;
 
 	@Autowired
 	private MemberRepository memberRepository;
@@ -51,11 +46,9 @@ class OrderServiceConcurrencyTest {
 
 	@Test
 	@DisplayName("주문 동시성 테스트")
-	void test1() throws Exception {
-		// given
+	void orderConcurrencyTest() throws Exception {
 		Member member = memberRepository.save(MemberFixture.anMember().build());
-
-		Product product = productRepository.save(ProductFixture.anProduct().build());
+		Product product = productRepository.save(getProduct());
 
 		int threadCount = 10;
 		for (int i = 0; i < threadCount; i++) {
@@ -65,7 +58,7 @@ class OrderServiceConcurrencyTest {
 		when(paymentClient.validatePayment(any(), any(), any())).thenReturn(Mono.empty());
 
 		// when
-		ExecutorService executorService = Executors.newFixedThreadPool(32);
+		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 		for (int i = 0; i < threadCount; i++) {
 			long orderId = i + 1;
@@ -84,6 +77,10 @@ class OrderServiceConcurrencyTest {
 
 		// then
 		Product afterProduct = productRepository.findById(product.getId()).orElseThrow();
-		assertThat(afterProduct.getQuantity()).isEqualTo(Quantity.from(0));
+		assertThat(afterProduct.getQuantity()).isZero();
+	}
+
+	private static Product getProduct() {
+		return getInStockProductBuilder().build();
 	}
 }

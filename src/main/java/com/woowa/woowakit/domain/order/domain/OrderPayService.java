@@ -22,9 +22,7 @@ public class OrderPayService {
 
 	@Counted("order.payment.request")
 	public void pay(final Long orderId, final String paymentKey) {
-		log.info("결제 요청 subscribe event: {}", paymentKey);
-
-		Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+		final Order order = getOrder(orderId);
 
 		paymentClient.validatePayment(paymentKey, order.getUuid(), order.getTotalPrice())
 			.publishOn(Schedulers.boundedElastic())
@@ -33,5 +31,10 @@ public class OrderPayService {
 			.onErrorMap(IllegalArgumentException.class, InvalidPayRequestException::new)
 			.onErrorMap(IllegalStateException.class, PayFailedException::new)
 			.block();
+	}
+
+	private Order getOrder(final Long orderId) {
+		return orderRepository.findById(orderId)
+			.orElseThrow(OrderNotFoundException::new);
 	}
 }

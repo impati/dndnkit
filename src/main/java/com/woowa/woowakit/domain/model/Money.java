@@ -1,51 +1,67 @@
 package com.woowa.woowakit.domain.model;
 
 import java.util.Objects;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+
+import javax.persistence.Embeddable;
+
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Embeddable
 public class Money {
 
-    public static final Money ZERO = new Money(0L);
+	public static final Money ZERO = new Money(0L);
 
-    private final Long value;
+	private Long value;
 
-    public static Money from(final Long value) {
-        return new Money(value);
-    }
+	protected Money() {
+	}
 
-    public Money multiply(final Long value) {
-        return new Money(this.value * value);
-    }
+	private Money(final long value) {
+		validate(value);
+		this.value = value;
+	}
 
-    public Money add(final Money money) {
-        return new Money(this.value + money.value);
-    }
+	private void validate(final long value) {
+		if (value < 0) {
+			throw new MoneyNegativeException();
+		}
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Money)) {
-            return false;
-        }
-        Money money = (Money) o;
-        return Objects.equals(value, money.value);
-    }
+	public static Money from(final Long value) {
+		return new Money(value);
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+	public Money multiply(final Long value) {
+		return new Money(this.value * value);
+	}
 
-    @Override
-    public String toString() {
-        return "Money{" +
-            "value=" + value +
-            '}';
-    }
+	public Money add(final Money money) {
+		return new Money(this.value + money.value);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Money)) {
+			return false;
+		}
+
+		Money money = (Money)o;
+		return Objects.equals(value, money.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
+	}
+
+	@Override
+	public String toString() {
+		return "Money{" +
+			"value=" + value +
+			'}';
+	}
 }

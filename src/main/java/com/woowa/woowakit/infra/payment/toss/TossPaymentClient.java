@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.woowa.woowakit.domain.model.Money;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
 import com.woowa.woowakit.infra.payment.toss.dto.TossPaymentErrorResponse;
 import com.woowa.woowakit.infra.payment.toss.dto.TossPaymentRequest;
@@ -44,8 +43,11 @@ public class TossPaymentClient implements PaymentClient {
 		this.maxRetry = maxRetry;
 	}
 
-	public Mono<Void> validatePayment(final String paymentKey, final String orderToken,
-		final Money totalPrice) {
+	public Mono<Void> validatePayment(
+		final String paymentKey,
+		final String orderToken,
+		final Long totalPrice
+	) {
 		return webClient.post()
 			.uri(url)
 			.header(HttpHeaders.AUTHORIZATION, keyToBasic(paymentSecretKey))
@@ -58,8 +60,7 @@ public class TossPaymentClient implements PaymentClient {
 			.timeout(timeout)
 			.retryWhen(Retry.fixedDelay(maxRetry, timeout).filter(this::isRetryable))
 			.onErrorMap(IllegalStateException.class, Throwable::getCause)
-			.onErrorMap(TimeoutException.class,
-				e -> new IllegalStateException("요청 시간이 초과되었습니다.", e))
+			.onErrorMap(TimeoutException.class, e -> new IllegalStateException("요청 시간이 초과되었습니다.", e))
 			.then();
 	}
 

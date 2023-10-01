@@ -1,27 +1,32 @@
 package com.woowa.woowakit.domain.order.exception;
 
-import com.woowa.woowakit.global.error.WooWaException;
 import org.springframework.http.HttpStatus;
 
-public class OrderException extends WooWaException {
+public class OrderException extends RuntimeException {
 
-    public OrderException(HttpStatus httpStatus) {
-        super(httpStatus);
-    }
+	private final HttpStatus httpStatus;
 
-    public OrderException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public OrderException(final String message, final Throwable cause) {
+		super(message, cause);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+	}
 
-    public OrderException(String message, Throwable cause, HttpStatus httpStatus) {
-        super(message, cause, httpStatus);
-    }
+	public OrderException(final String message, final Throwable cause, final HttpStatus httpStatus) {
+		super(message, cause);
+		this.httpStatus = httpStatus;
+	}
 
-    public OrderException(String message) {
-        super(message);
-    }
+	public OrderException(final String message) {
+		super(message);
+		this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+	}
 
-    public OrderException(String message, HttpStatus httpStatus) {
-        super(message, httpStatus);
-    }
+	public OrderException(final String message, final HttpStatus httpStatus) {
+		super(message);
+		this.httpStatus = httpStatus;
+	}
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
+	}
 }
