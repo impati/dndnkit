@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.woowa.woowakit.domain.auth.exception.MemberException;
 import com.woowa.woowakit.domain.cart.exception.CartException;
+import com.woowa.woowakit.domain.model.exception.ModelException;
 import com.woowa.woowakit.domain.order.exception.OrderException;
 import com.woowa.woowakit.domain.product.exception.ProductException;
 import com.woowa.woowakit.domain.stock.exception.StockException;
@@ -45,6 +46,14 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(WooWaException.class)
 	public ResponseEntity<ErrorResponse> wooWaExceptionHandler(final WooWaException exception) {
+		log.info(exception.getMessage());
+		return ResponseEntity
+			.status(exception.getHttpStatus())
+			.body(new ErrorResponse(exception.getHttpStatus().value(), exception.getMessage()));
+	}
+
+	@ExceptionHandler(ModelException.class)
+	public ResponseEntity<ErrorResponse> modelExceptionHandler(final ModelException exception) {
 		log.info(exception.getMessage());
 		return ResponseEntity
 			.status(exception.getHttpStatus())
