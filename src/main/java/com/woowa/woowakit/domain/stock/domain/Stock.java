@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.woowa.woowakit.domain.model.BaseEntity;
+import com.woowa.woowakit.domain.model.ExpiryDate;
 import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.product.domain.Product;
 

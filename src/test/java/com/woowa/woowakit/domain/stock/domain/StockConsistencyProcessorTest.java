@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.woowa.woowakit.domain.fixture.ProductFixture;
+import com.woowa.woowakit.domain.model.ExpiryDate;
 import com.woowa.woowakit.domain.model.Quantity;
 import com.woowa.woowakit.domain.product.domain.Product;
 import com.woowa.woowakit.domain.product.domain.ProductRepository;

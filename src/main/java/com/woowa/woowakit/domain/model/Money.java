@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
+import com.woowa.woowakit.domain.model.exception.MoneyNegativeException;
+
 import lombok.Getter;
 
 @Getter
