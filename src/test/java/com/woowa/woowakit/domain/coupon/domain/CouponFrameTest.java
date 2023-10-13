@@ -136,13 +136,6 @@ class CouponFrameTest {
 			.build();
 	}
 
-	private CouponFrame getCouponFrame(final CouponType couponType, final int discount) {
-		return getCouponFrameBuilder()
-			.couponType(couponType)
-			.discount(discount)
-			.build();
-	}
-
 	private CouponFrame getDefaultCouponFrame() {
 		return getCouponFrameBuilder()
 			.build();

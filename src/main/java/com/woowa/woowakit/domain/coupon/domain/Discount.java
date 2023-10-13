@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Embeddable
-public abstract class Discount {
+public class Discount {
 
 	protected int value;
 }

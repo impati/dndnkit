@@ -71,6 +71,7 @@ public class CouponFrame extends BaseEntity {
 		final int discount
 	) {
 		Assert.hasText(name, "쿠폰 이름은 필수 입니다.");
+		Assert.notNull(duration, "쿠폰 유효기간은 필수 입니다.");
 		Assert.notNull(endDate, "쿠폰 만료일은 필수 입니다.");
 		Assert.notNull(couponTarget, "쿠폰 적용 대상은 필수 값입니다.");
 		Assert.notNull(couponType, "쿠폰 타입은 필수 값입니다.");
