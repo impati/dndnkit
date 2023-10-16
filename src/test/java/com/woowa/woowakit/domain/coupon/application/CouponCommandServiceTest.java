@@ -15,6 +15,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponFrame;
 import com.woowa.woowakit.domain.coupon.domain.CouponFrameRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.exception.CouponFrameExpiredException;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 
 @SpringBootTest
@@ -53,6 +54,17 @@ class CouponCommandServiceTest {
 				persistentCouponFrame.getCouponTarget(),
 				now.plusDays(persistentCouponFrame.getDuration().toDays()),
 				persistentCouponFrame.getDiscount());
+	}
+
+	@Test
+	@DisplayName("쿠폰틀이 만료되었다면 사용자 쿠폰을 생성하는데 실패한다.")
+	void createCouponFail() {
+		CouponFrame persistentCouponFrame = couponFrameRepository.save(getCouponFrame());
+		Long memberId = 1L;
+		LocalDate now = LocalDate.of(3024, 12, 31);
+
+		assertThatCode(() -> couponCommandService.create(memberId, persistentCouponFrame.getId(), now))
+			.isInstanceOf(CouponFrameExpiredException.class);
 	}
 
 	private CouponFrame getCouponFrame() {

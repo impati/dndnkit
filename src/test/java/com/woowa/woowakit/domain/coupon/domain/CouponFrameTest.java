@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.woowa.woowakit.domain.coupon.exception.CouponFrameExpiredException;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 
 class CouponFrameTest {
@@ -29,11 +30,32 @@ class CouponFrameTest {
 			.contains(
 				"한식 밀키트 10% 할인 쿠폰",
 				Duration.ofDays(3),
-				LocalDate.of(2023, 12, 31),
+				LocalDate.of(3023, 12, 31),
 				17000,
 				CouponTarget.from(ProductCategory.KOREAN),
 				CouponType.RATED,
 				15);
+	}
+
+	@Test
+	@DisplayName("쿠폰틀 만료기간이 지나지 않으면 사용할 수 있다.")
+	void isAvailableTrue() {
+		CouponFrame couponFrame = getCouponFrameBuilder()
+			.endDate(LocalDate.of(3023, 12, 31))
+			.build();
+
+		assertThat(couponFrame.isAvailable(LocalDate.of(3023, 12, 31))).isTrue();
+		assertThat(couponFrame.isAvailable(LocalDate.of(3023, 12, 11))).isTrue();
+	}
+
+	@Test
+	@DisplayName("쿠폰틀 만료기간이 지나면 사용할 수 없다.")
+	void isAvailableFalse() {
+		CouponFrame couponFrame = getCouponFrameBuilder()
+			.endDate(LocalDate.of(3023, 12, 31))
+			.build();
+
+		assertThat(couponFrame.isAvailable(LocalDate.of(3024, 1, 1))).isFalse();
 	}
 
 	@Test
@@ -109,6 +131,18 @@ class CouponFrameTest {
 			.contains(1000, memberId);
 	}
 
+	@Test
+	@DisplayName("쿠폰틀이 만료되면 쿠폰을 생성하는데 실패한다.")
+	void makeFixedCouponFail() {
+		CouponFrame couponFrame = getCouponFrame(CouponType.FIXED, 1000);
+		Long memberId = 1L;
+		LocalDate now = LocalDate.of(3033, 12, 31);
+
+		assertThatCode(() -> couponFrame.makeCoupon(memberId, now))
+			.isInstanceOf(CouponFrameExpiredException.class)
+			.hasMessage("쿠폰틀이 만료되었습니다.");
+	}
+
 	private CouponFrame getCouponFrameWithoutName() {
 		return CouponFrame.builder()
 			.duration(Duration.ofDays(3))
@@ -180,7 +214,7 @@ class CouponFrameTest {
 		return CouponFrame.builder()
 			.name("한식 밀키트 10% 할인 쿠폰")
 			.duration(Duration.ofDays(3))
-			.endDate(LocalDate.of(2023, 12, 31))
+			.endDate(LocalDate.of(3023, 12, 31))
 			.minimumOrderAmount(17000)
 			.couponTarget(CouponTarget.from(ProductCategory.KOREAN))
 			.couponType(CouponType.RATED)
