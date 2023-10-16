@@ -101,6 +101,18 @@ public class CouponFrame extends BaseEntity {
 		return discount.getValue();
 	}
 
+	public Coupon makeCoupon(final Long memberId, final LocalDate now) {
+		return Coupon.builder()
+			.couponType(couponType)
+			.discount(discount.value)
+			.expiryDate(now.plusDays(duration))
+			.couponTarget(couponTarget)
+			.name(name)
+			.memberId(memberId)
+			.minimumOrderAmount(minimumOrderAmount.getValue())
+			.build();
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {

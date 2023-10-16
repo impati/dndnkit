@@ -81,6 +81,34 @@ class CouponFrameTest {
 			.hasMessage("할인 금액 또는 할인률은 양수여야합니다.");
 	}
 
+	@Test
+	@DisplayName("정률 쿠폰틀로 쿠폰을 생성한다.")
+	void makeRateCoupon() {
+		CouponFrame couponFrame = getCouponFrame(CouponType.RATED, 10);
+		Long memberId = 1L;
+		LocalDate now = LocalDate.of(3023, 12, 31);
+
+		Coupon coupon = couponFrame.makeCoupon(memberId, now);
+
+		assertThat(coupon)
+			.extracting(Coupon::getDiscount, Coupon::getMemberId)
+			.contains(10, memberId);
+	}
+
+	@Test
+	@DisplayName("정액 쿠폰틀로 쿠폰을 생성한다.")
+	void makeFixedCoupon() {
+		CouponFrame couponFrame = getCouponFrame(CouponType.FIXED, 1000);
+		Long memberId = 1L;
+		LocalDate now = LocalDate.of(3023, 12, 31);
+
+		Coupon coupon = couponFrame.makeCoupon(memberId, now);
+
+		assertThat(coupon)
+			.extracting(Coupon::getDiscount, Coupon::getMemberId)
+			.contains(1000, memberId);
+	}
+
 	private CouponFrame getCouponFrameWithoutName() {
 		return CouponFrame.builder()
 			.duration(Duration.ofDays(3))
@@ -133,6 +161,13 @@ class CouponFrameTest {
 			.minimumOrderAmount(17000)
 			.couponTarget(CouponTarget.from(ProductCategory.KOREAN))
 			.couponType(CouponType.RATED)
+			.build();
+	}
+
+	private CouponFrame getCouponFrame(final CouponType couponType, final int discount) {
+		return getCouponFrameBuilder()
+			.couponType(couponType)
+			.discount(discount)
 			.build();
 	}
 
