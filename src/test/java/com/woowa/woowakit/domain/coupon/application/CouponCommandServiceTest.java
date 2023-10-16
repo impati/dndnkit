@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.Duration;
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.woowa.woowakit.domain.coupon.domain.Coupon;
 import com.woowa.woowakit.domain.coupon.domain.CouponFrame;
 import com.woowa.woowakit.domain.coupon.domain.CouponFrameRepository;
+import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.exception.CouponFrameExpiredException;
@@ -25,10 +27,19 @@ class CouponCommandServiceTest {
 	private CouponFrameRepository couponFrameRepository;
 
 	@Autowired
+	private CouponRepository couponRepository;
+
+	@Autowired
 	private CouponCommandService couponCommandService;
 
 	@Autowired
 	private CouponQueryService couponQueryService;
+
+	@AfterEach
+	void tearDown() {
+		couponRepository.deleteAll();
+		couponFrameRepository.deleteAll();
+	}
 
 	@Test
 	@DisplayName("쿠폰틀로부터 사용자 쿠폰을 생성한다.")

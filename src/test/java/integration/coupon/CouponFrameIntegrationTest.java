@@ -13,6 +13,7 @@ import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponFrameCreateReq
 import com.woowa.woowakit.domain.coupon.dto.request.CouponFrameCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponFrameCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.response.CouponFrameResponse;
+import com.woowa.woowakit.domain.coupon.dto.response.CouponFrameResponses;
 import com.woowa.woowakit.domain.product.domain.ProductBrand;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import com.woowa.woowakit.domain.product.domain.ProductStatus;
@@ -138,5 +139,25 @@ class CouponFrameIntegrationTest extends IntegrationTest {
 		assertThat(detailResponse)
 			.extracting(CouponFrameResponse::getName, CouponFrameResponse::getCouponTarget)
 			.contains("default", CouponTarget.all());
+	}
+
+	@Test
+	@DisplayName("유효한 쿠폰틀들을 정보를 조회한다.")
+	void findCouponFrames() {
+		// given
+		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+		CouponHelper.createAllCouponFrame(accessToken);
+		CouponHelper.creatBrandCouponFrame(accessToken);
+
+		// when
+		ExtractableResponse<Response> response = CommonRestAssuredUtils.get(
+			"/coupon-frames",
+			accessToken
+		);
+
+		// then
+		CouponFrameResponses detailResponses = response.as(CouponFrameResponses.class);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(detailResponses.getCouponFrameResponses()).hasSize(2);
 	}
 }

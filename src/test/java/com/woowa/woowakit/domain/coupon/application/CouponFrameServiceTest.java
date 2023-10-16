@@ -5,12 +5,15 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.Duration;
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.woowa.woowakit.domain.coupon.domain.CouponFrame;
+import com.woowa.woowakit.domain.coupon.domain.CouponFrameRepository;
+import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponFrameCreateRequest;
@@ -19,10 +22,22 @@ import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponFrameCreateRequ
 class CouponFrameServiceTest {
 
 	@Autowired
+	private CouponFrameRepository couponFrameRepository;
+
+	@Autowired
+	private CouponRepository couponRepository;
+
+	@Autowired
 	private CouponFrameCommandService couponFrameCommandService;
 
 	@Autowired
 	private CouponFrameQueryService couponFrameQueryService;
+
+	@AfterEach
+	void tearDown() {
+		couponRepository.deleteAll();
+		couponFrameRepository.deleteAll();
+	}
 
 	@Test
 	@DisplayName("쿠폰 적용 대상과 쿠폰 정보로 '쿠폰틀' 을 생성하고 ID 를 반환한다.")

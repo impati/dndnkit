@@ -1,6 +1,8 @@
 package com.woowa.woowakit.domain.coupon.api;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.woowa.woowakit.domain.auth.annotation.Admin;
+import com.woowa.woowakit.domain.auth.annotation.User;
 import com.woowa.woowakit.domain.coupon.application.CouponFrameCommandService;
 import com.woowa.woowakit.domain.coupon.application.CouponFrameQueryService;
 import com.woowa.woowakit.domain.coupon.domain.CouponFrame;
@@ -22,6 +25,7 @@ import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponFrameCreateReq
 import com.woowa.woowakit.domain.coupon.dto.request.CouponFrameCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponFrameCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.response.CouponFrameResponse;
+import com.woowa.woowakit.domain.coupon.dto.response.CouponFrameResponses;
 
 import lombok.RequiredArgsConstructor;
 
@@ -77,5 +81,13 @@ public class CouponFrameController {
 		CouponFrame couponFrame = couponFrameQueryService.getCouponFrame(couponFrameId);
 
 		return ResponseEntity.ok(CouponFrameResponse.from(couponFrame));
+	}
+
+	@User
+	@GetMapping
+	public ResponseEntity<CouponFrameResponses> findCouponFrames() {
+		List<CouponFrame> couponFrames = couponFrameQueryService.getCouponFrames(LocalDate.now());
+
+		return ResponseEntity.ok(CouponFrameResponses.from(couponFrames));
 	}
 }

@@ -83,6 +83,14 @@ public class CouponHelper {
 		).header("Location"));
 	}
 
+	public static Long creatBrandCouponFrame(final String accessToken) {
+		return getIdFrom(CommonRestAssuredUtils.post(
+			"/coupon-frames/brand",
+			createBrandCouponFrameCreateRequest(CouponType.RATED, ProductBrand.MOKRAN, 10),
+			accessToken
+		).header("Location"));
+	}
+
 	public static CouponCreateRequest createCouponCreateRequest(final Long couponFrameId) {
 		return CouponCreateRequest.from(couponFrameId);
 	}
