@@ -1,5 +1,8 @@
 package com.woowa.woowakit.domain.coupon.application;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,5 +22,9 @@ public class CouponQueryService {
 	public Coupon getCoupon(final Long couponId) {
 		return couponRepository.findById(couponId)
 			.orElseThrow(NotFoundCouponException::new);
+	}
+
+	public List<Coupon> getCouponsByMember(final Long memberId, final LocalDate now) {
+		return couponRepository.findCouponByMemberId(memberId, now);
 	}
 }

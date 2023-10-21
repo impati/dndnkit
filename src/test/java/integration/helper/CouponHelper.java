@@ -75,6 +75,10 @@ public class CouponHelper {
 		);
 	}
 
+	public static CouponCreateRequest createCouponCreateRequest(final Long couponFrameId) {
+		return CouponCreateRequest.from(couponFrameId);
+	}
+
 	public static Long createAllCouponFrame(final String accessToken) {
 		return getIdFrom(CommonRestAssuredUtils.post(
 			"/coupon-frames/all",
@@ -91,8 +95,13 @@ public class CouponHelper {
 		).header("Location"));
 	}
 
-	public static CouponCreateRequest createCouponCreateRequest(final Long couponFrameId) {
-		return CouponCreateRequest.from(couponFrameId);
+	public static void createCouponOfMember(final Long couponFrameId, final String accessToken) {
+		CouponCreateRequest request = CouponHelper.createCouponCreateRequest(couponFrameId);
+		CommonRestAssuredUtils.post(
+			"/coupons",
+			request,
+			accessToken
+		);
 	}
 
 	private static Long getIdFrom(String location) {
