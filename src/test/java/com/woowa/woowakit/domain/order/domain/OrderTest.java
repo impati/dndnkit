@@ -73,6 +73,20 @@ class OrderTest {
 		assertThat(order.collectProductIds()).contains(1L, 2L, 3L);
 	}
 
+	@Test
+	@DisplayName("주문 시 총 할인금액을 입력으로 총금액을 계산한다.")
+	void orderTotalPriceDiscount() {
+		Order order = getOrder(List.of(
+			getOrderItem(1000, 1),
+			getOrderItem(2000, 2),
+			getOrderItem(3000, 3)
+		));
+
+		order.discount(5000);
+
+		assertThat(order.getTotalPrice()).isEqualTo(9000);
+	}
+
 	private OrderItem getOrderItem(final Long productId) {
 		return getOrderItemBuilder()
 			.productId(productId)

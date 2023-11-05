@@ -2,26 +2,22 @@ package integration.coupon;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
-import com.woowa.woowakit.domain.coupon.dto.request.BrandCouponFrameCreateRequest;
-import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponFrameCreateRequest;
-import com.woowa.woowakit.domain.coupon.dto.request.CouponFrameCreateRequest;
-import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponFrameCreateRequest;
-import com.woowa.woowakit.domain.coupon.dto.response.CouponFrameResponse;
-import com.woowa.woowakit.domain.product.domain.ProductBrand;
-import com.woowa.woowakit.domain.product.domain.ProductCategory;
-import com.woowa.woowakit.domain.product.domain.ProductStatus;
+import com.woowa.woowakit.domain.coupon.dto.request.CouponCreateRequest;
+import com.woowa.woowakit.domain.coupon.dto.response.CouponResponse;
+import com.woowa.woowakit.domain.coupon.dto.response.CouponResponses;
 
 import integration.IntegrationTest;
 import integration.helper.CommonRestAssuredUtils;
 import integration.helper.CouponHelper;
 import integration.helper.MemberHelper;
-import integration.helper.ProductHelper;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
@@ -29,120 +25,59 @@ import io.restassured.response.Response;
 class CouponIntegrationTest extends IntegrationTest {
 
 	@Test
-	@DisplayName("쿠폰을 생성할 정보와 적용할 상품 ID를 입력 받아 쿠폰틀 도메인을 생성한다.")
-	void createCouponFrameCouponTargetIsProductId() {
+	@DisplayName("사용자에게 쿠폰틀로 쿠폰을 발급한다.")
+	void createCouponByCouponFrame() {
 		// given
-		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
-		Long productId = ProductHelper.createProductAndSetUp(100, ProductStatus.IN_STOCK);
-		ProductCouponFrameCreateRequest request = CouponHelper.createProductCouponFrameCreateRequest(
-			CouponType.FIXED,
-			productId,
-			1000
-		);
+		String adminAccessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+		Long couponFrameId = CouponHelper.createAllCouponFrame(adminAccessToken);
+		String accessToken = MemberHelper.signUpAndLogIn();
+		CouponCreateRequest request = CouponHelper.createCouponCreateRequest(couponFrameId);
 
 		// when
 		ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-			"/coupon-frame/product",
+			"/coupons",
 			request,
 			accessToken
 		);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).matches("^/coupon-frame/[0-9]+$");
+		assertThat(response.header("Location")).matches("^/coupons/[0-9]+$");
 	}
 
 	@Test
-	@DisplayName("쿠폰을 생성할 정보와 적용할 브랜드를 입력 받아 쿠폰틀 도메인을 생성한다.")
-	void createCouponFrameCouponTargetIsBrand() {
+	@DisplayName("발급 받은 쿠폰을 사용자가 조회할 수 있어야한다.")
+	void findCouponByMember() {
 		// given
-		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
-		ProductBrand productBrand = ProductBrand.MOKRAN;
-		BrandCouponFrameCreateRequest request = CouponHelper.createBrandCouponFrameCreateRequest(
-			CouponType.FIXED,
-			productBrand,
-			1000
-		);
-
-		// when
-		ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-			"/coupon-frame/brand",
-			request,
-			accessToken
-		);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).matches("^/coupon-frame/[0-9]+$");
-	}
-
-	@Test
-	@DisplayName("쿠폰을 생성할 정보와 적용할 카테고리를 입력 받아 쿠폰틀 도메인을 생성한다.")
-	void createCouponFrameCouponTargetIsCategory() {
-		// given
-		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
-		ProductCategory category = ProductCategory.CHINESE;
-		CategoryCouponFrameCreateRequest request = CouponHelper.createCategoryCouponFrameCreateRequest(
-			CouponType.FIXED,
-			category,
-			1000
-		);
-
-		// when
-		ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-			"/coupon-frame/category",
-			request,
-			accessToken
-		);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).matches("^/coupon-frame/[0-9]+$");
-	}
-
-	@Test
-	@DisplayName("쿠폰을 생성할 정보를 입력받아 어디에도 적용할 수 있는 쿠폰틀 도메인을 생성한다.")
-	void createCouponFrameCouponTargetIsAll() {
-		// given
-		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
-		CouponFrameCreateRequest request = CouponHelper.createAllCouponFrameCreateRequest();
-
-		// when
-		ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-			"/coupon-frame/all",
-			request,
-			accessToken
-		);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		assertThat(response.header("Location")).matches("^/coupon-frame/[0-9]+$");
-	}
-
-	@Test
-	@DisplayName("쿠폰틀 ID 로 쿠폰틀 정보를 조회한다.")
-	void findCouponFrame() {
-		// given
-		String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
-		ExtractableResponse<Response> couponFrame = CouponHelper.createAllCouponFrame(accessToken);
-		Long couponFrameId = getIdFrom(couponFrame.header("Location"));
+		String adminAccessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+		Long couponFrameId = CouponHelper.createAllCouponFrame(adminAccessToken);
+		String accessToken = MemberHelper.signUpAndLogIn();
+		CouponHelper.createCouponOfMember(couponFrameId, accessToken);
 
 		// when
 		ExtractableResponse<Response> response = CommonRestAssuredUtils.get(
-			"/coupon-frame/" + couponFrameId,
+			"/coupons",
 			accessToken
 		);
 
 		// then
-		CouponFrameResponse detailResponse = response.as(CouponFrameResponse.class);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(detailResponse)
-			.extracting(CouponFrameResponse::getName, CouponFrameResponse::getCouponTarget)
-			.contains("default", CouponTarget.all());
-	}
-
-	private Long getIdFrom(String location) {
-		String[] parts = location.split("/");
-		return Long.parseLong(parts[parts.length - 1]);
+		CouponResponses couponResponses = response.as(CouponResponses.class);
+		assertThat(couponResponses.getCouponResponses())
+			.hasSize(1)
+			.extracting(
+				CouponResponse::getName,
+				CouponResponse::getExpiryDate,
+				CouponResponse::getCouponType,
+				CouponResponse::getMinimumOrderAmount,
+				CouponResponse::getDiscount,
+				CouponResponse::getCouponTarget)
+			.contains(
+				tuple("default",
+					LocalDate.now().plusDays(7),
+					CouponType.FIXED,
+					17000,
+					1000,
+					CouponTarget.all()));
 	}
 }

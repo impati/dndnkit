@@ -48,6 +48,10 @@ public class Order extends BaseEntity {
 	@AttributeOverride(name = "value", column = @Column(name = "total_price"))
 	private Money totalPrice;
 
+	@Embedded
+	@AttributeOverride(name = "value", column = @Column(name = "origin_total_price"))
+	private Money originTotalPrice;
+
 	@Column(name = "member_id")
 	private Long memberId;
 
@@ -62,6 +66,7 @@ public class Order extends BaseEntity {
 	private Order(final Long memberId, final List<OrderItem> orderItems) {
 		this.orderStatus = OrderStatus.ORDERED;
 		this.totalPrice = calculateTotalPrice(orderItems);
+		this.originTotalPrice = this.totalPrice;
 		this.memberId = memberId;
 		this.orderItems.addAll(orderItems);
 		this.uuid = UUID.randomUUID().toString();
@@ -72,6 +77,10 @@ public class Order extends BaseEntity {
 		final List<OrderItem> orderItems
 	) {
 		return new Order(memberId, orderItems);
+	}
+
+	public void discount(final int discountMoney) {
+		this.totalPrice = this.totalPrice.minus(discountMoney);
 	}
 
 	private Money calculateTotalPrice(final List<OrderItem> orderItems) {
@@ -100,6 +109,10 @@ public class Order extends BaseEntity {
 
 	public long getTotalPrice() {
 		return totalPrice.getValue();
+	}
+
+	public long getOriginTotalPrice() {
+		return originTotalPrice.getValue();
 	}
 
 	@Override

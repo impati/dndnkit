@@ -24,7 +24,7 @@ class CouponTest {
 	@DisplayName("한식 카테고리 쿠폰은 한식 상품에 적용할 수 있다.")
 	void isApplicableTrue() {
 		Product product = getProduct(ProductCategory.KOREAN);
-		RateCoupon rateCoupon = getRateCoupon(ProductCategory.KOREAN, "한식 카테고리 밀키트 10% 할인 쿠폰");
+		Coupon rateCoupon = getRateCoupon(ProductCategory.KOREAN, "한식 카테고리 밀키트 10% 할인 쿠폰");
 
 		assertThat(rateCoupon.isApplicable(product)).isTrue();
 	}
@@ -33,7 +33,7 @@ class CouponTest {
 	@DisplayName("한식 카테고리 쿠폰은 중식 상품에 적용할 수 없다.")
 	void isApplicableFalse() {
 		Product product = getProduct(ProductCategory.CHINESE);
-		RateCoupon rateCoupon = getRateCoupon(ProductCategory.KOREAN, "한식 카테고리 밀키트 10% 할인 쿠폰");
+		Coupon rateCoupon = getRateCoupon(ProductCategory.KOREAN, "한식 카테고리 밀키트 10% 할인 쿠폰");
 
 		assertThat(rateCoupon.isApplicable(product)).isFalse();
 	}
@@ -42,7 +42,7 @@ class CouponTest {
 	@DisplayName("브랜드 종류가 같다면 쿠폰을 적용할 수 있다.")
 	void isApplicableBrandTrue() {
 		Product product = getProduct(ProductBrand.COOKIT);
-		RateCoupon rateCoupon = getRateCoupon(ProductBrand.COOKIT);
+		Coupon rateCoupon = getRateCoupon(ProductBrand.COOKIT);
 
 		assertThat(rateCoupon.isApplicable(product)).isTrue();
 	}
@@ -51,7 +51,7 @@ class CouponTest {
 	@DisplayName("브랜드 종류가 다르다면 쿠폰을 적용할 수 없다.")
 	void isApplicableBrandFalse() {
 		Product product = getProduct(ProductBrand.FRESH_EASY);
-		RateCoupon rateCoupon = getRateCoupon(ProductBrand.COOKIT);
+		Coupon rateCoupon = getRateCoupon(ProductBrand.COOKIT);
 
 		assertThat(rateCoupon.isApplicable(product)).isFalse();
 	}
@@ -60,7 +60,7 @@ class CouponTest {
 	@DisplayName("상품 ID 가 같다면 쿠폰을 적용할 수 있다.")
 	void isApplicableProductIdTrue() {
 		Product product = getProduct(1L);
-		RateCoupon rateCoupon = getRateCoupon(1L);
+		Coupon rateCoupon = getRateCoupon(1L);
 
 		assertThat(rateCoupon.isApplicable(product)).isTrue();
 	}
@@ -69,16 +69,55 @@ class CouponTest {
 	@DisplayName("상품 ID 가 다르다면 쿠폰을 적용할 수 없다")
 	void isApplicableProductIdFalse() {
 		Product product = getProduct(2L);
-		RateCoupon rateCoupon = getRateCoupon(1L);
+		Coupon rateCoupon = getRateCoupon(1L);
 
 		assertThat(rateCoupon.isApplicable(product)).isFalse();
+	}
+
+	@Test
+	@DisplayName("쿠폰의 memberId와 입력으로오는 memberId와 같으면 쿠폰 주인이다. ")
+	void isOwnerTrue() {
+		Long memberId = 1L;
+		Coupon coupon = getCoupon(memberId);
+
+		assertThat(coupon.isOwner(memberId)).isTrue();
+	}
+
+	@Test
+	@DisplayName("쿠폰 타입이 FIXED 인 경우 할인 금액은 discount 값과 동일하다.")
+	void computeDiscountPriceFixed() {
+		Coupon fixedCoupon = getFixedCoupon(CouponTarget.all(), 5000);
+
+		int discountPrice = fixedCoupon.computeDiscountPrice(17000);
+
+		assertThat(discountPrice).isEqualTo(5000);
+	}
+
+	@Test
+	@DisplayName("쿠폰 타입이 FIXED 인 경우 할인 금액은 discount 값과 동일하다.")
+	void computeDiscountPriceRated() {
+		Coupon rateCoupon = getRateCoupon(CouponTarget.all(), 40);
+
+		int discountPrice = rateCoupon.computeDiscountPrice(17000);
+
+		assertThat(discountPrice).isEqualTo(1700 * 4);
+	}
+
+	@Test
+	@DisplayName("쿠폰을 사용한다면 enable 값이 false 여야한다.")
+	void usedCoupon() {
+		Coupon rateCoupon = getRateCoupon(CouponTarget.all(), 40);
+
+		rateCoupon.used();
+
+		assertThat(rateCoupon.isEnabled()).isFalse();
 	}
 
 	@ParameterizedTest
 	@MethodSource
 	@DisplayName("모든 상품에 대해 적용할 수 있는 쿠폰이라면 모두 적용할 수 있다.")
 	void isApplicableAll(final Product product) {
-		RateCoupon rateCoupon = getAllRateCoupon();
+		Coupon rateCoupon = getAllRateCoupon();
 
 		assertThat(rateCoupon.isApplicable(product)).isTrue();
 	}
@@ -99,13 +138,13 @@ class CouponTest {
 			arguments(getProduct(ProductCategory.WESTERN)));
 	}
 
-	private RateCoupon getAllRateCoupon() {
+	private Coupon getAllRateCoupon() {
 		return getRateCouponBuilder()
 			.couponTarget(CouponTarget.all())
 			.build();
 	}
 
-	private RateCoupon getRateCoupon(final ProductBrand brand) {
+	private Coupon getRateCoupon(final ProductBrand brand) {
 		return getRateCouponBuilder()
 			.couponTarget(CouponTarget.from(brand))
 			.build();
@@ -129,22 +168,45 @@ class CouponTest {
 			.build();
 	}
 
-	private RateCoupon getRateCoupon(final long productId) {
+	private Coupon getFixedCoupon(final CouponTarget couponTarget, final int discount) {
+		return getRateCouponBuilder()
+			.couponTarget(couponTarget)
+			.couponType(CouponType.FIXED)
+			.discount(discount)
+			.build();
+	}
+
+	private Coupon getRateCoupon(final long productId) {
 		return getRateCouponBuilder()
 			.couponTarget(CouponTarget.from(productId))
 			.build();
 	}
 
-	private RateCoupon getRateCoupon(final ProductCategory productCategory, final String name) {
+	private Coupon getRateCoupon(final CouponTarget couponTarget, final int discount) {
+		return getRateCouponBuilder()
+			.couponTarget(couponTarget)
+			.couponType(CouponType.RATED)
+			.discount(discount)
+			.build();
+	}
+
+	private Coupon getRateCoupon(final ProductCategory productCategory, final String name) {
 		return getRateCouponBuilder()
 			.couponTarget(CouponTarget.from(productCategory))
 			.name(name)
 			.build();
 	}
 
-	private RateCoupon.RateCouponBuilder getRateCouponBuilder() {
-		return RateCoupon.builder()
-			.discountRate(10)
+	private Coupon getCoupon(final Long memberId) {
+		return getRateCouponBuilder()
+			.memberId(memberId)
+			.build();
+	}
+
+	private Coupon.CouponBuilder getRateCouponBuilder() {
+		return Coupon.builder()
+			.discount(10)
+			.couponType(CouponType.RATED)
 			.couponTarget(CouponTarget.from(ProductCategory.KOREAN))
 			.expiryDate(LocalDate.of(2023, 12, 31))
 			.minimumOrderAmount(17000)

@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.springframework.util.Assert;
 
+import com.woowa.woowakit.domain.coupon.exception.CouponFrameExpiredException;
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.ExpiryDate;
 
@@ -99,6 +100,25 @@ public class CouponFrame extends BaseEntity {
 
 	public int getDiscount() {
 		return discount.getValue();
+	}
+
+	public boolean isAvailable(final LocalDate now) {
+		return now.isBefore(endDate.getValue()) || now.isEqual(endDate.getValue());
+	}
+
+	public Coupon makeCoupon(final Long memberId, final LocalDate now) {
+		if (!isAvailable(now)) {
+			throw new CouponFrameExpiredException();
+		}
+		return Coupon.builder()
+			.couponType(couponType)
+			.discount(discount.value)
+			.expiryDate(now.plusDays(duration))
+			.couponTarget(couponTarget)
+			.name(name)
+			.memberId(memberId)
+			.minimumOrderAmount(minimumOrderAmount.getValue())
+			.build();
 	}
 
 	@Override
