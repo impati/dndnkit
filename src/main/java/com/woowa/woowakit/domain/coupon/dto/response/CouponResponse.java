@@ -14,6 +14,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponResponse {
 
+	private Long couponId;
 	private String name;
 	private LocalDate expiryDate;
 	private CouponType couponType;
@@ -23,6 +24,7 @@ public class CouponResponse {
 
 	public static CouponResponse from(final Coupon coupon) {
 		return new CouponResponse(
+			coupon.getId(),
 			coupon.getName(),
 			coupon.getExpiryDate(),
 			coupon.getCouponType(),

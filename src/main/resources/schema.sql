@@ -58,6 +58,7 @@ CREATE TABLE if not exists order_items
     id         bigint auto_increment not null,
     order_id   bigint,
     product_id bigint                not null,
+    coupon_id  bigint,
     name       varchar(20)           not null,
     image      varchar(255)          not null,
     price      bigint                not null,
@@ -71,13 +72,14 @@ CREATE TABLE if not exists order_items
 
 create table if not exists orders
 (
-    id           bigint auto_increment not null,
-    order_status varchar(255)          not null,
-    total_price  bigint                not null,
-    member_id    bigint                not null,
-    uuid         varchar(255)          not null,
-    created_at   datetime              not null,
-    updated_at   datetime              not null,
+    id                 bigint auto_increment not null,
+    order_status       varchar(255)          not null,
+    total_price        bigint                not null,
+    origin_total_price bigint                not null,
+    member_id          bigint                not null,
+    uuid               varchar(255)          not null,
+    created_at         datetime              not null,
+    updated_at         datetime              not null,
     primary key (id)
 );
 
@@ -144,6 +146,7 @@ create table if not exists coupons
     product_category     varchar(255),
     product_id           bigint,
     discount             int,
+    enabled              BOOLEAN default true,
     coupon_type          varchar(25)           not null,
     created_at           datetime              not null,
     updated_at           datetime              not null,

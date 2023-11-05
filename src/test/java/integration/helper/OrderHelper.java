@@ -46,7 +46,7 @@ public class OrderHelper {
 	}
 
 	public static OrderPayRequest createOrderPayRequest() {
-		return OrderPayRequest.of("paymentKey");
+		return OrderPayRequest.of("paymentKey", List.of());
 	}
 
 	public static OrderDetailResponse getOrder(

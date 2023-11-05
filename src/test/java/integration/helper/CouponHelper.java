@@ -95,13 +95,13 @@ public class CouponHelper {
 		).header("Location"));
 	}
 
-	public static void createCouponOfMember(final Long couponFrameId, final String accessToken) {
+	public static Long createCouponOfMember(final Long couponFrameId, final String accessToken) {
 		CouponCreateRequest request = CouponHelper.createCouponCreateRequest(couponFrameId);
-		CommonRestAssuredUtils.post(
+		return getIdFrom(CommonRestAssuredUtils.post(
 			"/coupons",
 			request,
 			accessToken
-		);
+		).header("Location"));
 	}
 
 	private static Long getIdFrom(String location) {

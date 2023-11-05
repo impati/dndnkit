@@ -33,6 +33,9 @@ public class OrderItem extends BaseEntity {
 	@Column(name = "product_id")
 	private Long productId;
 
+	@Column(name = "coupon_id")
+	private Long couponId;
+
 	@Column(name = "name")
 	private String name;
 
@@ -61,6 +64,10 @@ public class OrderItem extends BaseEntity {
 		this.image = Image.from(image);
 		this.price = Money.from(price);
 		this.quantity = Quantity.from(quantity);
+	}
+
+	public void applyCoupon(final Long couponId) {
+		this.couponId = couponId;
 	}
 
 	Money calculateTotalPrice() {

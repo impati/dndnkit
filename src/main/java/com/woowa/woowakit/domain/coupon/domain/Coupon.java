@@ -60,6 +60,9 @@ public class Coupon extends BaseEntity {
 	@Column(name = "coupon_type")
 	private CouponType couponType;
 
+	@Column(name = "enabled")
+	private boolean enabled;
+
 	@Builder
 	private Coupon(
 		final Long memberId,
@@ -82,6 +85,11 @@ public class Coupon extends BaseEntity {
 		this.couponTarget = couponTarget;
 		this.couponType = couponType;
 		this.discount = couponType.getDiscount(discount, minimumOrderAmount);
+		this.enabled = true;
+	}
+
+	public boolean isOwner(final Long memberId) {
+		return Objects.equals(this.memberId, memberId);
 	}
 
 	public boolean isApplicable(final Product product) {
@@ -98,6 +106,18 @@ public class Coupon extends BaseEntity {
 
 	public int getDiscount() {
 		return discount.getValue();
+	}
+
+	public int computeDiscountPrice(final long price) {
+		if (this.couponType == CouponType.FIXED) {
+			return discount.getValue();
+		}
+
+		return (int)(price * (discount.getValue() / 100d));
+	}
+
+	public void used() {
+		this.enabled = false;
 	}
 
 	@Override

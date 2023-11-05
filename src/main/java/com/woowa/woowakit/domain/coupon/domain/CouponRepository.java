@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
-	@Query("SELECT c FROM Coupon c WHERE c.memberId = :member AND c.expiryDate.value >= :now")
+	@Query("SELECT c FROM Coupon c WHERE c.memberId = :member AND c.expiryDate.value >= :now AND c.enabled = true")
 	List<Coupon> findCouponByMemberId(
 		@Param("member") final Long memberId,
 		@Param("now") final LocalDate now

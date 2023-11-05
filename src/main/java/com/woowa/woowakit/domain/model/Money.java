@@ -66,4 +66,8 @@ public class Money {
 			"value=" + value +
 			'}';
 	}
+
+	public Money minus(final long discountMoney) {
+		return Money.from(this.value - discountMoney);
+	}
 }

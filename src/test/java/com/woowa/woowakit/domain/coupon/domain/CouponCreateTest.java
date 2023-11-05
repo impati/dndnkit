@@ -32,13 +32,15 @@ class CouponCreateTest {
 				Coupon::getCouponTarget,
 				Coupon::getExpiryDate,
 				Coupon::getMinimumOrderAmount,
-				Coupon::getName)
+				Coupon::getName,
+				Coupon::isEnabled)
 			.contains(
 				1000,
 				CouponTarget.from(ProductCategory.KOREAN),
 				LocalDate.of(2023, 12, 31),
 				17000,
-				"한식 카테고리 밀키트 1000원 할인 쿠폰");
+				"한식 카테고리 밀키트 1000원 할인 쿠폰",
+				true);
 	}
 
 	@Test
@@ -60,13 +62,15 @@ class CouponCreateTest {
 				Coupon::getCouponTarget,
 				Coupon::getExpiryDate,
 				Coupon::getMinimumOrderAmount,
-				Coupon::getName)
+				Coupon::getName,
+				Coupon::isEnabled)
 			.contains(
 				10,
 				CouponTarget.from(ProductCategory.KOREAN),
 				LocalDate.of(2023, 12, 31),
 				17000,
-				"한식 카테고리 밀키트 1000원 할인 쿠폰");
+				"한식 카테고리 밀키트 1000원 할인 쿠폰",
+				true);
 	}
 
 	@Test
