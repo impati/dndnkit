@@ -13,13 +13,18 @@ import org.springframework.http.HttpStatus;
 
 import com.woowa.woowakit.domain.order.domain.OrderStatus;
 import com.woowa.woowakit.domain.order.domain.PaymentClient;
+import com.woowa.woowakit.domain.order.dto.request.CouponAppliedOrderItemRequest;
+import com.woowa.woowakit.domain.order.dto.request.OrderPayRequest;
 import com.woowa.woowakit.domain.order.dto.response.OrderDetailResponse;
+import com.woowa.woowakit.domain.order.dto.response.OrderItemDetailResponse;
+import com.woowa.woowakit.domain.order.dto.response.OrderItemResponse;
 import com.woowa.woowakit.domain.order.dto.response.OrderResponse;
 import com.woowa.woowakit.domain.product.domain.ProductStatus;
 import com.woowa.woowakit.global.error.ErrorResponse;
 
 import integration.IntegrationTest;
 import integration.helper.CommonRestAssuredUtils;
+import integration.helper.CouponHelper;
 import integration.helper.MemberHelper;
 import integration.helper.OrderHelper;
 import integration.helper.ProductHelper;
@@ -37,19 +42,22 @@ class OrderIntegrationTest extends IntegrationTest {
 	@DisplayName("주문을 생성한다")
 	void createOrder() {
 		// given
-		Long orderId1 = ProductHelper.createProductAndSetUp();
-		Long orderId2 = ProductHelper.createProductAndSetUp();
+		Long productAId = ProductHelper.createProductAndSetUp();
+		Long productBId = ProductHelper.createProductAndSetUp();
 		String accessToken = MemberHelper.signUpAndLogIn();
 
 		// when
 		ExtractableResponse<Response> response = OrderHelper.createOrder(
-			OrderHelper.createOrderRequests(orderId1, orderId2), accessToken);
+			OrderHelper.createOrderRequests(productAId, productBId),
+			accessToken
+		);
 
 		// then
 		OrderResponse orderResponse = response.as(OrderResponse.class);
+		List<OrderItemResponse> orderItems = orderResponse.getOrderItems();
 		assertThat(response.statusCode()).isEqualTo(201);
 		assertThat(orderResponse).extracting(OrderResponse::getId, OrderResponse::getUuid).isNotNull();
-		assertThat(orderResponse).extracting(OrderResponse::getOrderItems).asList().hasSize(2);
+		assertThat(orderItems).hasSize(2);
 	}
 
 	@Test
@@ -102,14 +110,17 @@ class OrderIntegrationTest extends IntegrationTest {
 
 		//when
 		ExtractableResponse<Response> response = OrderHelper.payOrder(
-			OrderHelper.createOrderPayRequest(), orderId, accessToken);
+			OrderHelper.createOrderPayRequest(),
+			orderId,
+			accessToken
+		);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(200);
 		Long afterProductQuantity = ProductHelper.getProductDetail(productId).getQuantity();
 		assertThat(afterProductQuantity).isEqualTo(beforeProductQuantity - 1);
 
-		OrderDetailResponse orderResponse = OrderHelper.getOrder(orderId, accessToken);
+		OrderDetailResponse orderResponse = getOrderDetail(accessToken, orderId);
 		assertThat(orderResponse).extracting("orderStatus").isEqualTo("PAYED");
 	}
 
@@ -138,7 +149,7 @@ class OrderIntegrationTest extends IntegrationTest {
 		Long afterProductQuantity = ProductHelper.getProductDetail(productId).getQuantity();
 		assertThat(afterProductQuantity).isEqualTo(beforeProductQuantity);
 
-		OrderDetailResponse orderResponse = OrderHelper.getOrder(orderId, accessToken);
+		OrderDetailResponse orderResponse = getOrderDetail(accessToken, orderId);
 		assertThat(orderResponse).extracting("orderStatus").isEqualTo("CANCELED");
 	}
 
@@ -162,6 +173,7 @@ class OrderIntegrationTest extends IntegrationTest {
 		assertThat(body).extracting(OrderDetailResponse::getOrderId).isEqualTo(orderId);
 		assertThat(body).extracting(OrderDetailResponse::getOrderStatus).isEqualTo(OrderStatus.PAYED.name());
 		assertThat(body).extracting(OrderDetailResponse::getTotalPrice).isEqualTo(3000L);
+		assertThat(body).extracting(OrderDetailResponse::getOriginTotalPrice).isEqualTo(3000L);
 	}
 
 	@Test
@@ -182,7 +194,49 @@ class OrderIntegrationTest extends IntegrationTest {
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		List body = response.as(List.class);
-		assertThat(body).hasSize(2);
+		assertThat(response.as(List.class)).hasSize(2);
+	}
+
+	@Test
+	@DisplayName("하나의 주문에서 주문아이템에 적용 가능한 쿠폰을 전달하면 할인 받을 수 있다.")
+	void applyCouponToOrder() {
+		// given
+		Long productId = ProductHelper.createProductAndSetUp();
+		String adminAccessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+		Long AllCouponFrameId = CouponHelper.createAllCouponFrame(adminAccessToken);
+		String accessToken = MemberHelper.signUpAndLogIn();
+		Long couponId = CouponHelper.createCouponOfMember(AllCouponFrameId, accessToken);
+		Long orderId = OrderHelper.createOrderAndGetId(productId, accessToken);
+		when(paymentClient.validatePayment(any(), any(), any())).thenReturn(Mono.empty());
+		OrderDetailResponse orderDetail = getOrderDetail(accessToken, orderId);
+		Long orderItemId = getFirstOrderItemId(orderDetail);
+		OrderPayRequest request = OrderPayRequest.of(
+			"paymentKey",
+			List.of(CouponAppliedOrderItemRequest.of(orderItemId, couponId))
+		);
+
+		// when
+		ExtractableResponse<Response> response = OrderHelper.payOrder(
+			request,
+			orderId,
+			accessToken
+		);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(200);
+		OrderDetailResponse completeOrderResponse = getOrderDetail(accessToken, orderId);
+		assertThat(completeOrderResponse.getTotalPrice()).isEqualTo(2000L);
+		assertThat(completeOrderResponse.getOriginTotalPrice()).isEqualTo(3000L);
+		OrderItemDetailResponse orderItemDetailResponse = completeOrderResponse.getOrderItems().get(0);
+		assertThat(orderItemDetailResponse.isAppliedCoupon()).isTrue();
+		assertThat(orderItemDetailResponse.getCouponResponse().getCouponId()).isEqualTo(couponId);
+	}
+
+	private static Long getFirstOrderItemId(final OrderDetailResponse orderDetail) {
+		return orderDetail.getOrderItems().get(0).getId();
+	}
+
+	private OrderDetailResponse getOrderDetail(final String accessToken, final Long orderId) {
+		return OrderHelper.getOrder(orderId, accessToken);
 	}
 }

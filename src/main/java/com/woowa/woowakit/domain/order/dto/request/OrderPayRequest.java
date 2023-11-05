@@ -1,5 +1,7 @@
 package com.woowa.woowakit.domain.order.dto.request;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
@@ -14,8 +16,12 @@ public class OrderPayRequest {
 
 	@NotNull(message = "결제 키는 필수값입니다.")
 	private String paymentKey;
+	private List<CouponAppliedOrderItemRequest> couponAppliedOrderItems;
 
-	public static OrderPayRequest of(final String paymentKey) {
-		return new OrderPayRequest(paymentKey);
+	public static OrderPayRequest of(
+		final String paymentKey,
+		final List<CouponAppliedOrderItemRequest> couponAppliedOrderItems
+	) {
+		return new OrderPayRequest(paymentKey, couponAppliedOrderItems);
 	}
 }

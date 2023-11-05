@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
-import com.woowa.woowakit.domain.product.exception.ProductQuantityNegativeException;
+import com.woowa.woowakit.domain.model.exception.QuantityNegativeException;
 
 import lombok.Getter;
 
@@ -28,7 +28,7 @@ public class Quantity {
 
 	private void validNotNegative(final long quantity) {
 		if (quantity < 0) {
-			throw new ProductQuantityNegativeException();
+			throw new QuantityNegativeException();
 		}
 	}
 

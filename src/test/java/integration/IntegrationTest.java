@@ -13,7 +13,8 @@ import integration.helper.DatabaseCleaner;
 import io.restassured.RestAssured;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-	WoowakitApplication.class, DatabaseCleaner.class, AdminCreator.class})
+	WoowakitApplication.class, DatabaseCleaner.class, AdminCreator.class
+})
 public class IntegrationTest {
 
 	@LocalServerPort

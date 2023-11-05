@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
+import com.woowa.woowakit.domain.model.exception.MoneyNegativeException;
+
 import lombok.Getter;
 
 @Getter
@@ -63,5 +65,9 @@ public class Money {
 		return "Money{" +
 			"value=" + value +
 			'}';
+	}
+
+	public Money minus(final long discountMoney) {
+		return Money.from(this.value - discountMoney);
 	}
 }

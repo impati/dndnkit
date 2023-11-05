@@ -6,14 +6,18 @@ drop table if exists orders;
 drop table if exists order_items;
 drop table if exists payments;
 drop table if exists cart_items;
+drop table if exists coupons;
+drop table if exists coupon_frames;
 
 create table if not exists members
 (
-    id       bigint auto_increment not null,
-    name     varchar(255)          not null,
-    email    varchar(255)          not null unique,
-    password varchar(255)          not null,
-    role     varchar(255)          not null,
+    id         bigint auto_increment not null,
+    name       varchar(255)          not null,
+    email      varchar(255)          not null unique,
+    password   varchar(255)          not null,
+    role       varchar(255)          not null,
+    created_at datetime,
+    updated_at datetime,
     primary key (id)
 );
 
@@ -54,6 +58,7 @@ CREATE TABLE if not exists order_items
     id         bigint auto_increment not null,
     order_id   bigint,
     product_id bigint                not null,
+    coupon_id  bigint,
     name       varchar(20)           not null,
     image      varchar(255)          not null,
     price      bigint                not null,
@@ -67,13 +72,14 @@ CREATE TABLE if not exists order_items
 
 create table if not exists orders
 (
-    id           bigint auto_increment not null,
-    order_status varchar(255)          not null,
-    total_price  bigint                not null,
-    member_id    bigint                not null,
-    uuid         varchar(255)          not null,
-    created_at   datetime              not null,
-    updated_at   datetime              not null,
+    id                 bigint auto_increment not null,
+    order_status       varchar(255)          not null,
+    total_price        bigint                not null,
+    origin_total_price bigint                not null,
+    member_id          bigint                not null,
+    uuid               varchar(255)          not null,
+    created_at         datetime              not null,
+    updated_at         datetime              not null,
     primary key (id)
 );
 
@@ -109,3 +115,41 @@ create table if not exists product_sales
     updated_at datetime              not null,
     primary key (id)
 );
+
+create table if not exists coupon_frames
+(
+    id                   bigint auto_increment not null,
+    name                 varchar(255)          not null,
+    duration             bigint,
+    end_date             date                  not null,
+    minimum_order_amount int                   not null,
+    coupon_target_type   varchar(255)          not null,
+    product_brand        varchar(255),
+    product_category     varchar(255),
+    product_id           bigint,
+    coupon_type          varchar(25)           not null,
+    discount             int,
+    created_at           datetime              not null,
+    updated_at           datetime              not null,
+    primary key (id)
+);
+
+create table if not exists coupons
+(
+    id                   bigint auto_increment not null,
+    name                 varchar(255)          not null,
+    expiry_date          date                  not null,
+    minimum_order_amount int                   not null,
+    coupon_target_type   varchar(255)          not null,
+    member_id            bigint                not null,
+    product_brand        varchar(255),
+    product_category     varchar(255),
+    product_id           bigint,
+    discount             int,
+    enabled              BOOLEAN default true,
+    coupon_type          varchar(25)           not null,
+    created_at           datetime              not null,
+    updated_at           datetime              not null,
+    primary key (id)
+);
+

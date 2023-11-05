@@ -1,4 +1,4 @@
-package com.woowa.woowakit.domain.stock.domain;
+package com.woowa.woowakit.domain.model;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
-import com.woowa.woowakit.domain.stock.exception.StockExpiredException;
+import com.woowa.woowakit.domain.model.exception.ExpiredException;
 
 import lombok.Getter;
 
@@ -14,6 +14,7 @@ import lombok.Getter;
 @Embeddable
 public class ExpiryDate implements Comparable<ExpiryDate> {
 
+	private static final String MY_ZONE_ID = "Asia/Seoul";
 	private LocalDate value;
 
 	protected ExpiryDate() {
@@ -29,8 +30,8 @@ public class ExpiryDate implements Comparable<ExpiryDate> {
 	}
 
 	private void validExpiryDate(final LocalDate date) {
-		if (date.isBefore(LocalDate.now(ZoneId.of("Asia/Seoul")))) {
-			throw new StockExpiredException();
+		if (date.isBefore(LocalDate.now(ZoneId.of(MY_ZONE_ID)))) {
+			throw new ExpiredException();
 		}
 	}
 

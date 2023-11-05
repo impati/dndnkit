@@ -15,7 +15,8 @@ import io.restassured.response.Response;
 public class OrderHelper {
 
 	public static ExtractableResponse<Response> createOrder(
-		final List<OrderCreateRequest> request, final String accessToken
+		final List<OrderCreateRequest> request,
+		final String accessToken
 	) {
 		return CommonRestAssuredUtils.post("/orders", request, accessToken);
 	}
@@ -45,7 +46,7 @@ public class OrderHelper {
 	}
 
 	public static OrderPayRequest createOrderPayRequest() {
-		return OrderPayRequest.of("paymentKey");
+		return OrderPayRequest.of("paymentKey", List.of());
 	}
 
 	public static OrderDetailResponse getOrder(

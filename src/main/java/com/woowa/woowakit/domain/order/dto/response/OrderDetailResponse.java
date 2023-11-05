@@ -1,7 +1,6 @@
 package com.woowa.woowakit.domain.order.dto.response;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.woowa.woowakit.domain.order.domain.Order;
 
@@ -17,29 +16,19 @@ public class OrderDetailResponse {
 
 	private Long orderId;
 	private String orderStatus;
+	private Long originTotalPrice;
 	private Long totalPrice;
 	private String uuid;
-	private List<OrderItemResponse> orderItems;
+	private List<OrderItemDetailResponse> orderItems;
 
-	public static OrderDetailResponse from(final Order order) {
+	public static OrderDetailResponse of(final Order order, final List<OrderItemDetailResponse> orderItems) {
 		return new OrderDetailResponse(
 			order.getId(),
 			order.getOrderStatus().name(),
+			order.getOriginTotalPrice(),
 			order.getTotalPrice(),
 			order.getUuid(),
-			convertOrderItemResponse(order)
+			orderItems
 		);
-	}
-
-	private static List<OrderItemResponse> convertOrderItemResponse(final Order order) {
-		return order.getOrderItems().stream()
-			.map(OrderItemResponse::from)
-			.collect(Collectors.toUnmodifiableList());
-	}
-
-	public static List<OrderDetailResponse> listOf(final List<Order> orders) {
-		return orders.stream()
-			.map(OrderDetailResponse::from)
-			.collect(Collectors.toUnmodifiableList());
 	}
 }

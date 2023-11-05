@@ -3,6 +3,8 @@ package com.woowa.woowakit.domain.order.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.woowa.woowakit.domain.coupon.dto.response.CouponResponses;
+import com.woowa.woowakit.domain.order.domain.CouponGroupOrderItem;
 import com.woowa.woowakit.domain.order.domain.Order;
 
 import lombok.AccessLevel;
@@ -20,22 +22,14 @@ public class OrderResponse {
 	private String uuid;
 
 	public static OrderResponse of(
-		final Long id,
-		final List<OrderItemResponse> orderItems,
-		final String uuid
+		final Order order,
+		final List<CouponGroupOrderItem> CouponGroupOrderItems
 	) {
-		return new OrderResponse(id, orderItems, uuid);
-	}
-
-	public static OrderResponse from(final Order order) {
-		final List<OrderItemResponse> orderItemResponses = order.getOrderItems().stream()
-			.map(OrderItemResponse::from)
-			.collect(Collectors.toUnmodifiableList());
-
-		return OrderResponse.of(
-			order.getId(),
-			orderItemResponses,
-			order.getUuid()
-		);
+		List<OrderItemResponse> orderItemResponses = CouponGroupOrderItems.stream()
+			.map(couponOrderItem -> OrderItemResponse.of(
+				couponOrderItem.getOrderItem(),
+				CouponResponses.from(couponOrderItem.getCoupons())))
+			.collect(Collectors.toList());
+		return new OrderResponse(order.getId(), orderItemResponses, order.getUuid());
 	}
 }

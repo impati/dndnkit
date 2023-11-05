@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.order.dto.response;
 
+import com.woowa.woowakit.domain.coupon.dto.response.CouponResponses;
 import com.woowa.woowakit.domain.order.domain.OrderItem;
 
 import lombok.AccessLevel;
@@ -18,26 +19,17 @@ public class OrderItemResponse {
 	private String image;
 	private Long price;
 	private Long quantity;
+	private CouponResponses couponResponses;
 
-	public static OrderItemResponse of(
-		final Long id,
-		final Long productId,
-		final String name,
-		final String image,
-		final Long price,
-		final Long quantity
-	) {
-		return new OrderItemResponse(id, productId, name, image, price, quantity);
-	}
-
-	public static OrderItemResponse from(final OrderItem orderItem) {
-		return OrderItemResponse.of(
+	public static OrderItemResponse of(final OrderItem orderItem, final CouponResponses couponResponses) {
+		return new OrderItemResponse(
 			orderItem.getId(),
 			orderItem.getProductId(),
 			orderItem.getName(),
 			orderItem.getImage(),
 			orderItem.getPrice(),
-			orderItem.getQuantity().getValue()
+			orderItem.getQuantity().getValue(),
+			couponResponses
 		);
 	}
 }
