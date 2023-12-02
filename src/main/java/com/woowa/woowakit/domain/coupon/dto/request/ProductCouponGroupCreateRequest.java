@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.coupon.dto.request;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
@@ -18,9 +19,10 @@ public class ProductCouponGroupCreateRequest extends CouponGroupCreateRequest {
             final CouponType couponType,
             final Long productId,
             final int minimumOrderAmount,
-            final int discount
+            final int discount,
+            final CouponDeploy couponDeploy
     ) {
-        super(name, durationDay, endDate, couponType, minimumOrderAmount, discount);
+        super(name, durationDay, endDate, couponType, minimumOrderAmount, discount, couponDeploy);
         this.productId = productId;
     }
 
@@ -31,7 +33,8 @@ public class ProductCouponGroupCreateRequest extends CouponGroupCreateRequest {
             final CouponType couponType,
             final Long productId,
             final int minimumOrderAmount,
-            final int discount
+            final int discount,
+            final CouponDeploy couponDeploy
     ) {
         return new ProductCouponGroupCreateRequest(
                 name,
@@ -40,7 +43,8 @@ public class ProductCouponGroupCreateRequest extends CouponGroupCreateRequest {
                 couponType,
                 productId,
                 minimumOrderAmount,
-                discount
+                discount,
+                couponDeploy
         );
     }
 }

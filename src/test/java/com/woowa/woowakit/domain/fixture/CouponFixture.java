@@ -2,6 +2,7 @@ package com.woowa.woowakit.domain.fixture;
 
 import com.woowa.woowakit.domain.coupon.domain.Coupon;
 import com.woowa.woowakit.domain.coupon.domain.Coupon.CouponBuilder;
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup.CouponGroupBuilder;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
@@ -20,6 +21,7 @@ public class CouponFixture {
                 .minimumOrderAmount(17000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .discount(15);
     }
 

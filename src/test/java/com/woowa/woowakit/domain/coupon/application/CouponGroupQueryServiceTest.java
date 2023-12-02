@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.coupon.application;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
@@ -57,6 +58,7 @@ class CouponGroupQueryServiceTest {
                 .minimumOrderAmount(17000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .discount(15);
     }
 }

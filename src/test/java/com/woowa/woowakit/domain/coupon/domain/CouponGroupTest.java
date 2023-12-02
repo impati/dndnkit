@@ -103,6 +103,15 @@ class CouponGroupTest {
     }
 
     @Test
+    @DisplayName("쿠폰틀에 쿠폰 배포 설정이 없다면 생성하는데 실패한다.")
+    void createCouponGroupFailBecauseOfDeploy() {
+
+        assertThatCode(() -> getCouponGroupWithoutCouponDeploy())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("쿠폰 배포 설정은 필수 입니다.");
+    }
+
+    @Test
     @DisplayName("정률 쿠폰틀로 쿠폰을 생성한다.")
     void makeRateCoupon() {
         CouponGroup couponGroup = getCouponGroup(CouponType.RATED, 10);
@@ -142,6 +151,18 @@ class CouponGroupTest {
                 .hasMessage("쿠폰틀이 만료되었습니다.");
     }
 
+    private CouponGroup getCouponGroupWithoutCouponDeploy() {
+        return CouponGroup.builder()
+                .name("default")
+                .duration(Duration.ofDays(3))
+                .endDate(LocalDate.of(2023, 12, 31))
+                .minimumOrderAmount(17000)
+                .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
+                .couponType(CouponType.RATED)
+                .discount(15)
+                .build();
+    }
+
     private CouponGroup getCouponGroupWithoutName() {
         return CouponGroup.builder()
                 .duration(Duration.ofDays(3))
@@ -150,6 +171,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 
@@ -161,6 +183,7 @@ class CouponGroupTest {
                 .minimumOrderAmount(17000)
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 
@@ -172,6 +195,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 
@@ -183,6 +207,7 @@ class CouponGroupTest {
                 .minimumOrderAmount(17000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 
@@ -194,6 +219,7 @@ class CouponGroupTest {
                 .minimumOrderAmount(17000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 
@@ -217,6 +243,7 @@ class CouponGroupTest {
                 .minimumOrderAmount(17000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
-                .discount(15);
+                .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance());
     }
 }

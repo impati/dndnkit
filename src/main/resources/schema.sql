@@ -116,7 +116,7 @@ create table if not exists product_sales
     primary key (id)
 );
 
-create table if not exists coupon_frames
+create table if not exists coupon_groups
 (
     id                   bigint auto_increment not null,
     name                 varchar(255)          not null,
@@ -124,6 +124,8 @@ create table if not exists coupon_frames
     end_date             date                  not null,
     minimum_order_amount int                   not null,
     coupon_target_type   varchar(255)          not null,
+    coupon_deploy_type   varchar(255)          not null,
+    coupon_deploy_amount int                   not null,
     product_brand        varchar(255),
     product_category     varchar(255),
     product_id           bigint,

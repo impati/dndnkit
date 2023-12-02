@@ -1,6 +1,7 @@
 package com.woowa.woowakit.domain.coupon.application;
 
 import com.woowa.woowakit.domain.coupon.domain.Coupon;
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
@@ -92,6 +93,7 @@ class CouponQueryServiceTest {
                 .couponTarget(couponTarget)
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package integration.helper;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.dto.request.BrandCouponGroupCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponGroupCreateRequest;
@@ -25,7 +26,8 @@ public class CouponHelper {
                 couponType,
                 productId,
                 17000,
-                discount
+                discount,
+                CouponDeploy.getDeployNoLimitInstance()
         );
     }
 
@@ -42,7 +44,8 @@ public class CouponHelper {
                 couponType,
                 productBrand,
                 17000,
-                discount
+                discount,
+                CouponDeploy.getDeployNoLimitInstance()
         );
     }
 
@@ -59,7 +62,8 @@ public class CouponHelper {
                 couponType,
                 productCategory,
                 17000,
-                discount
+                discount,
+                CouponDeploy.getDeployNoLimitInstance()
         );
     }
 
@@ -70,7 +74,8 @@ public class CouponHelper {
                 LocalDate.of(2023, 12, 31),
                 CouponType.FIXED,
                 17000,
-                1000
+                1000,
+                CouponDeploy.getDeployNoLimitInstance()
         );
     }
 

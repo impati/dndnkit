@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 
 @Getter
 @Entity
-@Table(name = "coupon_frames")
+@Table(name = "coupon_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CouponGroup extends BaseEntity {
 
@@ -49,6 +49,9 @@ public class CouponGroup extends BaseEntity {
     @Embedded
     private CouponTarget couponTarget;
 
+    @Embedded
+    private CouponDeploy couponDeploy;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "coupon_type")
     private CouponType couponType;
@@ -65,11 +68,13 @@ public class CouponGroup extends BaseEntity {
             final int minimumOrderAmount,
             final CouponTarget couponTarget,
             final CouponType couponType,
-            final int discount
+            final int discount,
+            final CouponDeploy couponDeploy
     ) {
         Assert.hasText(name, "쿠폰 이름은 필수 입니다.");
         Assert.notNull(duration, "쿠폰 유효기간은 필수 입니다.");
         Assert.notNull(endDate, "쿠폰 만료일은 필수 입니다.");
+        Assert.notNull(couponDeploy, "쿠폰 배포 설정은 필수 입니다.");
         Assert.notNull(couponTarget, "쿠폰 적용 대상은 필수 값입니다.");
         Assert.notNull(couponType, "쿠폰 타입은 필수 값입니다.");
         Assert.isTrue(discount > 0, "할인 금액 또는 할인률은 양수여야합니다.");
@@ -80,6 +85,7 @@ public class CouponGroup extends BaseEntity {
         this.couponTarget = couponTarget;
         this.couponType = couponType;
         this.discount = couponType.getDiscount(discount, minimumOrderAmount);
+        this.couponDeploy = couponDeploy;
     }
 
     public Duration getDuration() {

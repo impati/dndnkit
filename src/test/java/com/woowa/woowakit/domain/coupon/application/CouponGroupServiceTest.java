@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.coupon.application;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
@@ -49,7 +50,8 @@ class CouponGroupServiceTest {
                 CouponType.FIXED,
                 productId,
                 17000,
-                15000
+                15000,
+                CouponDeploy.getDeployNoLimitInstance()
         );
 
         Long CouponGroupId = couponGroupCommandService.create(couponTarget, request);

@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.coupon.dto.request;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
@@ -34,6 +35,9 @@ public class CouponGroupCreateRequest {
     @Min(value = 1, message = "할인 값은 양수여야합니다.")
     protected int discount;
 
+    @NotNull(message = "쿠폰 배포 설정 값은 필수 입니다.")
+    protected CouponDeploy couponDeploy;
+
     public CouponGroup toEntity(final CouponTarget couponTarget) {
         return CouponGroup.builder()
                 .name(name)
@@ -43,6 +47,7 @@ public class CouponGroupCreateRequest {
                 .minimumOrderAmount(minimumOrderAmount)
                 .discount(discount)
                 .couponTarget(couponTarget)
+                .couponDeploy(couponDeploy)
                 .build();
     }
 }
