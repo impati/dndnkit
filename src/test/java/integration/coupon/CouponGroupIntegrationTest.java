@@ -1,5 +1,6 @@
 package integration.coupon;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.dto.request.BrandCouponGroupCreateRequest;
@@ -41,14 +42,14 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-                "/coupon-frames/product",
+                "/coupon-groups/product",
                 request,
                 accessToken
         );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).matches("^/coupon-frames/[0-9]+$");
+        assertThat(response.header("Location")).matches("^/coupon-groups/[0-9]+$");
     }
 
     @Test
@@ -65,14 +66,14 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-                "/coupon-frames/brand",
+                "/coupon-groups/brand",
                 request,
                 accessToken
         );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).matches("^/coupon-frames/[0-9]+$");
+        assertThat(response.header("Location")).matches("^/coupon-groups/[0-9]+$");
     }
 
     @Test
@@ -89,14 +90,14 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-                "/coupon-frames/category",
+                "/coupon-groups/category",
                 request,
                 accessToken
         );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).matches("^/coupon-frames/[0-9]+$");
+        assertThat(response.header("Location")).matches("^/coupon-groups/[0-9]+$");
     }
 
     @Test
@@ -108,14 +109,14 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
-                "/coupon-frames/all",
+                "/coupon-groups/all",
                 request,
                 accessToken
         );
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).matches("^/coupon-frames/[0-9]+$");
+        assertThat(response.header("Location")).matches("^/coupon-groups/[0-9]+$");
     }
 
     @Test
@@ -127,7 +128,7 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.get(
-                "/coupon-frames/" + couponGroupId,
+                "/coupon-groups/" + couponGroupId,
                 accessToken
         );
 
@@ -149,7 +150,7 @@ class CouponGroupIntegrationTest extends IntegrationTest {
 
         // when
         ExtractableResponse<Response> response = CommonRestAssuredUtils.get(
-                "/coupon-frames",
+                "/coupon-groups",
                 accessToken
         );
 
@@ -157,5 +158,22 @@ class CouponGroupIntegrationTest extends IntegrationTest {
         CouponGroupResponses detailResponses = response.as(CouponGroupResponses.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(detailResponses.getCouponGroupResponses()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("쿠폰 배포 수량 만큼 쿠폰을 배포한다.")
+    void CouponDeploy() {
+        // given
+        String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+        Long couponGroupId = CouponHelper.createAllCouponGroup(accessToken, CouponDeploy.getDeployLimitInstance(1000));
+
+        // when
+        ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
+                "/coupon-groups/{couponId}/deploy", couponGroupId,
+                accessToken
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

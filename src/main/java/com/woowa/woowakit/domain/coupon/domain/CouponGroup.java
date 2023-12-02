@@ -88,20 +88,8 @@ public class CouponGroup extends BaseEntity {
         this.couponDeploy = couponDeploy;
     }
 
-    public Duration getDuration() {
-        return Duration.ofDays(duration);
-    }
-
-    public LocalDate getEndDate() {
-        return endDate.getValue();
-    }
-
-    public int getMinimumOrderAmount() {
-        return minimumOrderAmount.getValue();
-    }
-
-    public int getDiscount() {
-        return discount.getValue();
+    public boolean isLimitType() {
+        return this.couponDeploy.getCouponDeployType() == CouponDeployType.LIMIT;
     }
 
     public boolean isAvailable(final LocalDate now) {
@@ -121,6 +109,26 @@ public class CouponGroup extends BaseEntity {
                 .memberId(memberId)
                 .minimumOrderAmount(minimumOrderAmount.getValue())
                 .build();
+    }
+
+    public int getDeployAmount() {
+        return this.getCouponDeploy().getDeployAmount();
+    }
+
+    public Duration getDuration() {
+        return Duration.ofDays(duration);
+    }
+
+    public LocalDate getEndDate() {
+        return endDate.getValue();
+    }
+
+    public int getMinimumOrderAmount() {
+        return minimumOrderAmount.getValue();
+    }
+
+    public int getDiscount() {
+        return discount.getValue();
     }
 
     @Override

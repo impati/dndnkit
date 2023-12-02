@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coupon-frames")
+@RequestMapping("/coupon-groups")
 public class CouponGroupController {
 
     private final CouponGroupCommandService couponGroupCommandService;
@@ -40,7 +40,7 @@ public class CouponGroupController {
     ) {
         Long id = couponGroupCommandService.create(CouponTarget.from(request.getProductId()), request);
 
-        return ResponseEntity.created(URI.create("/coupon-frames/" + id)).build();
+        return ResponseEntity.created(URI.create("/coupon-groups/" + id)).build();
     }
 
     @Admin
@@ -50,7 +50,7 @@ public class CouponGroupController {
     ) {
         Long id = couponGroupCommandService.create(CouponTarget.from(request.getBrand()), request);
 
-        return ResponseEntity.created(URI.create("/coupon-frames/" + id)).build();
+        return ResponseEntity.created(URI.create("/coupon-groups/" + id)).build();
     }
 
     @Admin
@@ -60,7 +60,7 @@ public class CouponGroupController {
     ) {
         Long id = couponGroupCommandService.create(CouponTarget.from(request.getCategory()), request);
 
-        return ResponseEntity.created(URI.create("/coupon-frames/" + id)).build();
+        return ResponseEntity.created(URI.create("/coupon-groups/" + id)).build();
     }
 
     @Admin
@@ -68,15 +68,23 @@ public class CouponGroupController {
     public ResponseEntity<Void> createAllCouponGroup(@Valid @RequestBody final CouponGroupCreateRequest request) {
         Long id = couponGroupCommandService.create(CouponTarget.all(), request);
 
-        return ResponseEntity.created(URI.create("/coupon-frames/" + id)).build();
+        return ResponseEntity.created(URI.create("/coupon-groups/" + id)).build();
     }
 
     @Admin
-    @GetMapping("/{CouponGroupId}")
-    public ResponseEntity<CouponGroupResponse> findCouponGroup(@PathVariable final Long CouponGroupId) {
-        CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(CouponGroupId);
+    @GetMapping("/{couponGroupId}")
+    public ResponseEntity<CouponGroupResponse> findCouponGroup(@PathVariable final Long couponGroupId) {
+        CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(couponGroupId);
 
         return ResponseEntity.ok(CouponGroupResponse.from(couponGroup));
+    }
+
+    @Admin
+    @PostMapping("/{couponGroupId}/deploy")
+    public ResponseEntity<Void> deployCouponGroup(@PathVariable final Long couponGroupId) {
+        couponGroupCommandService.deploy(couponGroupId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @User

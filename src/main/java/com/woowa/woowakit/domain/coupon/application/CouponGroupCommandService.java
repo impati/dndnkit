@@ -1,5 +1,6 @@
 package com.woowa.woowakit.domain.coupon.application;
 
+import com.woowa.woowakit.domain.coupon.domain.CouponDeployAmountRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
@@ -13,11 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CouponGroupCommandService {
 
+    private final CouponGroupQueryService couponGroupQueryService;
     private final CouponGroupRepository couponGroupRepository;
+    private final CouponDeployAmountRepository couponDeployAmountRepository;
 
     public Long create(final CouponTarget couponTarget, final CouponGroupCreateRequest request) {
         final CouponGroup couponGroup = request.toEntity(couponTarget);
 
         return couponGroupRepository.save(couponGroup).getId();
+    }
+
+    public void deploy(final Long couponGroupId) {
+        CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(couponGroupId);
+
+        if (couponGroup.isLimitType()) {
+            couponDeployAmountRepository.deploy(couponGroup.getId(), couponGroup.getDeployAmount());
+        }
     }
 }

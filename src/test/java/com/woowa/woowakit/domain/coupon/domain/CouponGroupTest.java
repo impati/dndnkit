@@ -37,7 +37,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰틀 만료기간이 지나지 않으면 사용할 수 있다.")
+    @DisplayName("쿠폰 그룹 만료기간이 지나지 않으면 사용할 수 있다.")
     void isAvailableTrue() {
         CouponGroup couponGroup = getCouponGroupBuilder()
                 .endDate(LocalDate.of(3023, 12, 31))
@@ -48,7 +48,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰틀 만료기간이 지나면 사용할 수 없다.")
+    @DisplayName("쿠폰 그룹 만료기간이 지나면 사용할 수 없다.")
     void isAvailableFalse() {
         CouponGroup couponGroup = getCouponGroupBuilder()
                 .endDate(LocalDate.of(3023, 12, 31))
@@ -58,7 +58,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰을 생성할 '쿠폰틀'을 생성할 때 쿠폰 이름이 없다면 실패한다.")
+    @DisplayName("쿠폰을 생성할 '쿠폰 그룹'을 생성할 때 쿠폰 이름이 없다면 실패한다.")
     void createCouponGroupNameFail() {
 
         assertThatCode(this::getCouponGroupWithoutName)
@@ -67,7 +67,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰을 생성할 '쿠폰틀'을 생성할 때 쿠폰 만료일이 없다면 실패한다.")
+    @DisplayName("쿠폰을 생성할 '쿠폰 그룹'을 생성할 때 쿠폰 만료일이 없다면 실패한다.")
     void createCouponGroupEndDateFail() {
 
         assertThatCode(this::getCouponGroupWithoutEndDate)
@@ -76,7 +76,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰을 생성할 '쿠폰틀'을 생성할 때 쿠폰 적용 대상이 없다면 실패한다.")
+    @DisplayName("쿠폰을 생성할 '쿠폰 그룹'을 생성할 때 쿠폰 적용 대상이 없다면 실패한다.")
     void createCouponGroupTargetFail() {
 
         assertThatCode(this::getCouponGroupWithoutCouponTarget)
@@ -85,7 +85,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰을 생성할 '쿠폰틀'을 생성할 때 쿠폰 타입이 없다면 실패한다.")
+    @DisplayName("쿠폰을 생성할 '쿠폰 그룹'을 생성할 때 쿠폰 타입이 없다면 실패한다.")
     void createCouponGroupTypeFail() {
 
         assertThatCode(this::getCouponGroupWithoutType)
@@ -94,7 +94,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰을 생성할 '쿠폰틀'을 생성할 때 할인 값은 양수여야한다. 실패한다.")
+    @DisplayName("쿠폰을 생성할 '쿠폰 그룹'을 생성할 때 할인 값은 양수여야한다. 실패한다.")
     void createCouponGroupDiscountFail() {
 
         assertThatCode(this::getCouponGroupWithoutDiscount)
@@ -103,7 +103,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰틀에 쿠폰 배포 설정이 없다면 생성하는데 실패한다.")
+    @DisplayName("쿠폰 그룹에 쿠폰 배포 설정이 없다면 생성하는데 실패한다.")
     void createCouponGroupFailBecauseOfDeploy() {
 
         assertThatCode(() -> getCouponGroupWithoutCouponDeploy())
@@ -112,7 +112,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("정률 쿠폰틀로 쿠폰을 생성한다.")
+    @DisplayName("정률 쿠폰 그룹로 쿠폰을 생성한다.")
     void makeRateCoupon() {
         CouponGroup couponGroup = getCouponGroup(CouponType.RATED, 10);
         Long memberId = 1L;
@@ -126,7 +126,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("정액 쿠폰틀로 쿠폰을 생성한다.")
+    @DisplayName("정액 쿠폰 그룹로 쿠폰을 생성한다.")
     void makeFixedCoupon() {
         CouponGroup couponGroup = getCouponGroup(CouponType.FIXED, 1000);
         Long memberId = 1L;
@@ -140,7 +140,7 @@ class CouponGroupTest {
     }
 
     @Test
-    @DisplayName("쿠폰틀이 만료되면 쿠폰을 생성하는데 실패한다.")
+    @DisplayName("쿠폰 그룹이 만료되면 쿠폰을 생성하는데 실패한다.")
     void makeFixedCouponFail() {
         CouponGroup couponGroup = getCouponGroup(CouponType.FIXED, 1000);
         Long memberId = 1L;
@@ -148,7 +148,28 @@ class CouponGroupTest {
 
         assertThatCode(() -> couponGroup.makeCoupon(memberId, now))
                 .isInstanceOf(CouponGroupExpiredException.class)
-                .hasMessage("쿠폰틀이 만료되었습니다.");
+                .hasMessage("쿠폰 그룹이 만료되었습니다.");
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 제한 있는 배포 타입인 경우 isLimitType 이 true 이다.")
+    void isLimitTypeTrue() {
+        CouponGroup couponGroup = getCouponGroupBuilder().couponDeploy(CouponDeploy.getDeployLimitInstance(100))
+                .build();
+
+        boolean limitType = couponGroup.isLimitType();
+
+        assertThat(limitType).isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 제한 있는 배포 타입이 아닌 경우 isLimitType 이 false 이다.")
+    void isLimitTypeFalse() {
+        CouponGroup couponGroup = getCouponGroupBuilder().couponDeploy(CouponDeploy.getDeployNoLimitInstance()).build();
+
+        boolean limitType = couponGroup.isLimitType();
+
+        assertThat(limitType).isFalse();
     }
 
     private CouponGroup getCouponGroupWithoutCouponDeploy() {

@@ -1,6 +1,7 @@
 package com.woowa.woowakit.domain.coupon.dto.request;
 
 import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
+import com.woowa.woowakit.domain.coupon.domain.CouponDeployType;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
@@ -35,10 +36,16 @@ public class CouponGroupCreateRequest {
     @Min(value = 1, message = "할인 값은 양수여야합니다.")
     protected int discount;
 
-    @NotNull(message = "쿠폰 배포 설정 값은 필수 입니다.")
-    protected CouponDeploy couponDeploy;
+    @NotNull(message = "쿠폰 배포 타입 설정은 필수 입니다.")
+    protected CouponDeployType couponDeployType;
+
+    protected Integer couponDeployAmount;
 
     public CouponGroup toEntity(final CouponTarget couponTarget) {
+        CouponDeploy couponDeploy = CouponDeploy.getDeployNoLimitInstance();
+        if (couponDeployType == CouponDeployType.LIMIT) {
+            couponDeploy = CouponDeploy.getDeployLimitInstance(couponDeployAmount);
+        }
         return CouponGroup.builder()
                 .name(name)
                 .duration(Duration.ofDays(durationDay))

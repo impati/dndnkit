@@ -1,6 +1,7 @@
 package integration.helper;
 
 import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
+import com.woowa.woowakit.domain.coupon.domain.CouponDeployType;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.dto.request.BrandCouponGroupCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponGroupCreateRequest;
@@ -27,7 +28,28 @@ public class CouponHelper {
                 productId,
                 17000,
                 discount,
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeployType.NO_LIMIT,
+                null
+        );
+    }
+
+    public static ProductCouponGroupCreateRequest createProductCouponGroupCreateRequest(
+            final CouponType couponType,
+            final Long productId,
+            final int discount,
+            final CouponDeploy couponDeploy
+
+    ) {
+        return ProductCouponGroupCreateRequest.of(
+                "default",
+                7L,
+                LocalDate.of(2023, 12, 31),
+                couponType,
+                productId,
+                17000,
+                discount,
+                couponDeploy.getCouponDeployType(),
+                couponDeploy.getDeployAmount()
         );
     }
 
@@ -45,7 +67,8 @@ public class CouponHelper {
                 productBrand,
                 17000,
                 discount,
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeployType.NO_LIMIT,
+                null
         );
     }
 
@@ -63,7 +86,8 @@ public class CouponHelper {
                 productCategory,
                 17000,
                 discount,
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeployType.NO_LIMIT,
+                null
         );
     }
 
@@ -75,7 +99,21 @@ public class CouponHelper {
                 CouponType.FIXED,
                 17000,
                 1000,
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeployType.NO_LIMIT,
+                null
+        );
+    }
+
+    public static CouponGroupCreateRequest createAllCouponGroupCreateRequest(final CouponDeploy couponDeploy) {
+        return new CouponGroupCreateRequest(
+                "default",
+                7L,
+                LocalDate.of(2023, 12, 31),
+                CouponType.FIXED,
+                17000,
+                1000,
+                couponDeploy.getCouponDeployType(),
+                couponDeploy.getDeployAmount()
         );
     }
 
@@ -85,15 +123,23 @@ public class CouponHelper {
 
     public static Long createAllCouponGroup(final String accessToken) {
         return getIdFrom(CommonRestAssuredUtils.post(
-                "/coupon-frames/all",
+                "/coupon-groups/all",
                 createAllCouponGroupCreateRequest(),
+                accessToken
+        ).header("Location"));
+    }
+
+    public static Long createAllCouponGroup(final String accessToken, final CouponDeploy couponDeploy) {
+        return getIdFrom(CommonRestAssuredUtils.post(
+                "/coupon-groups/all",
+                createAllCouponGroupCreateRequest(couponDeploy),
                 accessToken
         ).header("Location"));
     }
 
     public static Long creatBrandCouponGroup(final String accessToken) {
         return getIdFrom(CommonRestAssuredUtils.post(
-                "/coupon-frames/brand",
+                "/coupon-groups/brand",
                 createBrandCouponGroupCreateRequest(CouponType.RATED, ProductBrand.MOKRAN, 10),
                 accessToken
         ).header("Location"));

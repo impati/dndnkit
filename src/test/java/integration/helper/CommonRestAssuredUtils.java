@@ -3,10 +3,9 @@ package integration.helper;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
-import java.util.Map;
 
 public class CommonRestAssuredUtils {
 
@@ -98,6 +97,16 @@ public class CommonRestAssuredUtils {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> post(String url, Long pathVariable, String token) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .post(url, pathVariable)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> delete(String url) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -118,12 +127,12 @@ public class CommonRestAssuredUtils {
 
     public static <T> ExtractableResponse<Response> delete(String url, String token) {
         return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header("Authorization", "Bearer " + token)
-            .when()
-            .delete(url)
-            .then().log().all()
-            .extract();
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .delete(url)
+                .then().log().all()
+                .extract();
     }
 
     public static <T> ExtractableResponse<Response> delete(String url, T pathParam, String token) {

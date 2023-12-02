@@ -1,6 +1,6 @@
 package com.woowa.woowakit.domain.coupon.application;
 
-import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
+import com.woowa.woowakit.domain.coupon.domain.CouponDeployType;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
@@ -51,7 +51,8 @@ class CouponGroupServiceTest {
                 productId,
                 17000,
                 15000,
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeployType.NO_LIMIT,
+                null
         );
 
         Long CouponGroupId = couponGroupCommandService.create(couponTarget, request);
