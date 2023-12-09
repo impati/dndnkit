@@ -4,6 +4,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponDeployAmountRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
+import com.woowa.woowakit.domain.coupon.domain.CouponGroupStatus;
 import com.woowa.woowakit.domain.coupon.exception.NotFoundCouponDeployAmountException;
 import com.woowa.woowakit.domain.fixture.CouponFixture;
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +43,7 @@ class CouponGroupCommandServiceTest {
 
         couponGroupCommandService.deploy(couponGroup.getId());
 
+        assertThat(getCouponGroup(couponGroup).getCouponGroupStatus()).isEqualTo(CouponGroupStatus.DEPLOY);
         int couponDeployAmount = couponDeployAmountRepository.getCouponDeployAmount(couponGroup.getId());
         assertThat(couponDeployAmount).isEqualTo(deployAmount);
         clearResource(couponGroup);
@@ -56,8 +58,13 @@ class CouponGroupCommandServiceTest {
 
         couponGroupCommandService.deploy(couponGroup.getId());
 
+        assertThat(getCouponGroup(couponGroup).getCouponGroupStatus()).isEqualTo(CouponGroupStatus.DEPLOY);
         assertThatCode(() -> couponDeployAmountRepository.getCouponDeployAmount(couponGroup.getId()))
                 .isInstanceOf(NotFoundCouponDeployAmountException.class);
+    }
+
+    private CouponGroup getCouponGroup(final CouponGroup couponGroup) {
+        return couponGroupRepository.findById(couponGroup.getId()).orElseThrow();
     }
 
     private void clearResource(final CouponGroup couponGroup) {

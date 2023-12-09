@@ -130,6 +130,7 @@ create table if not exists coupon_groups
     product_category     varchar(255),
     product_id           bigint,
     coupon_type          varchar(25)           not null,
+    coupon_group_status  varchar(25)           not null,
     discount             int,
     created_at           datetime              not null,
     updated_at           datetime              not null,

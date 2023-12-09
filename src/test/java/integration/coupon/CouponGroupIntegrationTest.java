@@ -176,4 +176,21 @@ class CouponGroupIntegrationTest extends IntegrationTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
+
+    @Test
+    @DisplayName("쿠폰 그룹을 배포하면 쿠폰그룹은 배포 상태가 되며 배포 상태에서 발급이 가능하다.")
+    void noLimitCouponDeploy() {
+        // given
+        String accessToken = MemberHelper.login(MemberHelper.createAdminLoginRequest());
+        Long couponGroupId = CouponHelper.createAllCouponGroup(accessToken, CouponDeploy.getDeployNoLimitInstance());
+
+        // when
+        ExtractableResponse<Response> response = CommonRestAssuredUtils.post(
+                "/coupon-groups/{couponId}/deploy", couponGroupId,
+                accessToken
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }

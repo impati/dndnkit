@@ -27,6 +27,8 @@ public class CouponGroupCommandService {
     public void deploy(final Long couponGroupId) {
         CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(couponGroupId);
 
+        couponGroup.deploy();
+
         if (couponGroup.isLimitType()) {
             couponDeployAmountRepository.deploy(couponGroup.getId(), couponGroup.getDeployAmount());
         }

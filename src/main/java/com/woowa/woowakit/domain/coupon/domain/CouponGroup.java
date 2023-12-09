@@ -56,6 +56,10 @@ public class CouponGroup extends BaseEntity {
     @Column(name = "coupon_type")
     private CouponType couponType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "coupon_group_status")
+    private CouponGroupStatus couponGroupStatus;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "discount"))
     private Discount discount;
@@ -86,6 +90,11 @@ public class CouponGroup extends BaseEntity {
         this.couponType = couponType;
         this.discount = couponType.getDiscount(discount, minimumOrderAmount);
         this.couponDeploy = couponDeploy;
+        this.couponGroupStatus = CouponGroupStatus.CREATED;
+    }
+
+    public void deploy() {
+        this.couponGroupStatus = CouponGroupStatus.DEPLOY;
     }
 
     public boolean isLimitType() {

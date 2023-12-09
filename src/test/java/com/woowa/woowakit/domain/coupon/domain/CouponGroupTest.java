@@ -25,7 +25,9 @@ class CouponGroupTest {
                         CouponGroup::getMinimumOrderAmount,
                         CouponGroup::getCouponTarget,
                         CouponGroup::getCouponType,
-                        CouponGroup::getDiscount)
+                        CouponGroup::getDiscount,
+                        CouponGroup::getCouponGroupStatus
+                )
                 .contains(
                         "한식 밀키트 10% 할인 쿠폰",
                         Duration.ofDays(3),
@@ -33,7 +35,27 @@ class CouponGroupTest {
                         17000,
                         CouponTarget.from(ProductCategory.KOREAN),
                         CouponType.RATED,
-                        15);
+                        15,
+                        CouponGroupStatus.CREATED
+                );
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹을 생성하면 쿠폰 그룹 상태는 CREATED 이다.")
+    void couponGroupStatusCreated() {
+        CouponGroup couponGroup = getDefaultCouponGroup();
+
+        assertThat(couponGroup.getCouponGroupStatus()).isEqualTo(CouponGroupStatus.CREATED);
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹을 배포하면 쿠폰 그룹 상태는 DEPLOY 이다.")
+    void couponGroupStatusCDeploy() {
+        CouponGroup couponGroup = getDefaultCouponGroup();
+
+        couponGroup.deploy();
+
+        assertThat(couponGroup.getCouponGroupStatus()).isEqualTo(CouponGroupStatus.DEPLOY);
     }
 
     @Test
