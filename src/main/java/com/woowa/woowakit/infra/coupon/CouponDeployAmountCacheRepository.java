@@ -1,6 +1,8 @@
 package com.woowa.woowakit.infra.coupon;
 
 import com.woowa.woowakit.domain.coupon.domain.CouponDeployAmountRepository;
+import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
+import com.woowa.woowakit.domain.coupon.exception.ExhaustedCouponDeployAmountException;
 import com.woowa.woowakit.domain.coupon.exception.NotFoundCouponDeployAmountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,6 +17,14 @@ public class CouponDeployAmountCacheRepository implements CouponDeployAmountRepo
     @Override
     public void deploy(final Long couponGroupId, final int CouponDeployAmount) {
         redisTemplate.opsForValue().set(getKey(couponGroupId), CouponDeployAmount);
+    }
+
+    @Override
+    public void decrease(final CouponGroup couponGroup) {
+        long amount = redisTemplate.opsForValue().decrement(getKey(couponGroup.getId()));
+        if (amount < 0) {
+            throw new ExhaustedCouponDeployAmountException();
+        }
     }
 
     @Override

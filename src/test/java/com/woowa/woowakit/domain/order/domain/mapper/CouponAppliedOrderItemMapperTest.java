@@ -107,17 +107,20 @@ class CouponAppliedOrderItemMapperTest {
     private Coupon saveCoupon(
             final Long memberId
     ) {
-        CouponGroup couponGroup = saveCouponGroup(CouponTarget.all());
+        CouponGroup couponGroup = saveDeployedCouponGroup(CouponTarget.all());
 
-        return couponRepository.save(couponGroup.makeCoupon(memberId, LocalDate.of(3023, 12, 31)));
+        return couponRepository.save(couponGroup.issueCoupon(memberId, LocalDate.of(3023, 12, 31)));
     }
 
-    private CouponGroup saveCouponGroup(final CouponTarget couponTarget) {
-        return couponGroupRepository.save(getDefaultCouponGroupBuilder()
+    private CouponGroup saveDeployedCouponGroup(final CouponTarget couponTarget) {
+        CouponGroup couponGroup = getDefaultCouponGroupBuilder()
                 .couponType(CouponType.FIXED)
                 .minimumOrderAmount(1000)
                 .discount(1000)
                 .couponTarget(couponTarget)
-                .build());
+                .build();
+        couponGroup.deploy();
+        couponGroupRepository.save(couponGroup);
+        return couponGroup;
     }
 }

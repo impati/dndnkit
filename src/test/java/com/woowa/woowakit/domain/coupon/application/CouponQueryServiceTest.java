@@ -41,14 +41,14 @@ class CouponQueryServiceTest {
     @Test
     @DisplayName("사용자 쿠폰들을 조회해온다.")
     void getCouponsByMember() {
-        CouponGroup persistentAllCouponGroup = couponGroupRepository.save(getCouponGroup(CouponTarget.all()));
+        CouponGroup persistentAllCouponGroup = couponGroupRepository.save(getDeployedCouponGroup(CouponTarget.all()));
         CouponGroup persistentBrandCouponGroup = couponGroupRepository.save(
-                getCouponGroup(CouponTarget.from(ProductBrand.MOKRAN))
+                getDeployedCouponGroup(CouponTarget.from(ProductBrand.MOKRAN))
         );
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3023, 12, 31);
-        couponRepository.save(persistentAllCouponGroup.makeCoupon(memberId, now));
-        couponRepository.save(persistentBrandCouponGroup.makeCoupon(memberId, now));
+        couponRepository.save(persistentAllCouponGroup.issueCoupon(memberId, now));
+        couponRepository.save(persistentBrandCouponGroup.issueCoupon(memberId, now));
 
         List<Coupon> coupons = couponQueryService.getCouponsByMember(memberId, now);
 
@@ -65,13 +65,13 @@ class CouponQueryServiceTest {
     @Test
     @DisplayName("사용자 쿠폰들을 조회하는데 만료된 쿠폰은 조회하지 않는다.")
     void getNotExpiredCouponsByMember() {
-        CouponGroup persistentAllCouponGroup = couponGroupRepository.save(getCouponGroup(CouponTarget.all()));
+        CouponGroup persistentAllCouponGroup = couponGroupRepository.save(getDeployedCouponGroup(CouponTarget.all()));
         CouponGroup persistentBrandCouponGroup = couponGroupRepository.save(
-                getCouponGroup(CouponTarget.from(ProductBrand.MOKRAN))
+                getDeployedCouponGroup(CouponTarget.from(ProductBrand.MOKRAN))
         );
         Long memberId = 1L;
-        couponRepository.save(persistentAllCouponGroup.makeCoupon(memberId, LocalDate.of(3023, 12, 31)));
-        couponRepository.save(persistentBrandCouponGroup.makeCoupon(memberId, LocalDate.of(3023, 12, 11)));
+        couponRepository.save(persistentAllCouponGroup.issueCoupon(memberId, LocalDate.of(3023, 12, 31)));
+        couponRepository.save(persistentBrandCouponGroup.issueCoupon(memberId, LocalDate.of(3023, 12, 11)));
 
         List<Coupon> coupons = couponQueryService.getCouponsByMember(memberId, LocalDate.of(3023, 12, 30));
 
@@ -95,5 +95,12 @@ class CouponQueryServiceTest {
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
                 .build();
+    }
+
+    private CouponGroup getDeployedCouponGroup(final CouponTarget couponTarget) {
+        CouponGroup couponGroup = getCouponGroup(couponTarget);
+        couponGroup.deploy();
+
+        return couponGroup;
     }
 }

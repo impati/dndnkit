@@ -113,14 +113,17 @@ class CouponAppliedOrderItemServiceTest {
             final CouponTarget couponTarget,
             final LocalDate now
     ) {
-        CouponGroup couponGroup = saveCouponGroup(couponTarget);
+        CouponGroup couponGroup = saveDeployedCouponGroup(couponTarget);
 
-        return couponRepository.save(couponGroup.makeCoupon(member.getId(), now));
+        return couponRepository.save(couponGroup.issueCoupon(member.getId(), now));
     }
 
-    private CouponGroup saveCouponGroup(final CouponTarget couponTarget) {
-        return couponGroupRepository.save(getDefaultCouponGroupBuilder()
+    private CouponGroup saveDeployedCouponGroup(final CouponTarget couponTarget) {
+        CouponGroup couponGroup = getDefaultCouponGroupBuilder()
                 .couponTarget(couponTarget)
-                .build());
+                .build();
+        couponGroup.deploy();
+        couponGroupRepository.save(couponGroup);
+        return couponGroup;
     }
 }

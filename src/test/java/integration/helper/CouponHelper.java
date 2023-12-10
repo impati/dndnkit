@@ -33,26 +33,6 @@ public class CouponHelper {
         );
     }
 
-    public static ProductCouponGroupCreateRequest createProductCouponGroupCreateRequest(
-            final CouponType couponType,
-            final Long productId,
-            final int discount,
-            final CouponDeploy couponDeploy
-
-    ) {
-        return ProductCouponGroupCreateRequest.of(
-                "default",
-                7L,
-                LocalDate.of(2023, 12, 31),
-                couponType,
-                productId,
-                17000,
-                discount,
-                couponDeploy.getCouponDeployType(),
-                couponDeploy.getDeployAmount()
-        );
-    }
-
     public static BrandCouponGroupCreateRequest createBrandCouponGroupCreateRequest(
             final CouponType couponType,
             final ProductBrand productBrand,
@@ -122,27 +102,33 @@ public class CouponHelper {
     }
 
     public static Long createAllCouponGroup(final String accessToken) {
-        return getIdFrom(CommonRestAssuredUtils.post(
+        Long couponGroupId = getIdFrom(CommonRestAssuredUtils.post(
                 "/coupon-groups/all",
                 createAllCouponGroupCreateRequest(),
                 accessToken
         ).header("Location"));
+        callDeploy(couponGroupId, accessToken);
+        return couponGroupId;
     }
 
     public static Long createAllCouponGroup(final String accessToken, final CouponDeploy couponDeploy) {
-        return getIdFrom(CommonRestAssuredUtils.post(
+        Long couponGroupId = getIdFrom(CommonRestAssuredUtils.post(
                 "/coupon-groups/all",
                 createAllCouponGroupCreateRequest(couponDeploy),
                 accessToken
         ).header("Location"));
+        callDeploy(couponGroupId, accessToken);
+        return couponGroupId;
     }
 
     public static Long creatBrandCouponGroup(final String accessToken) {
-        return getIdFrom(CommonRestAssuredUtils.post(
+        Long couponGroupId = getIdFrom(CommonRestAssuredUtils.post(
                 "/coupon-groups/brand",
                 createBrandCouponGroupCreateRequest(CouponType.RATED, ProductBrand.MOKRAN, 10),
                 accessToken
         ).header("Location"));
+        callDeploy(couponGroupId, accessToken);
+        return couponGroupId;
     }
 
     public static Long createCouponOfMember(final Long couponGroupId, final String accessToken) {
@@ -152,6 +138,13 @@ public class CouponHelper {
                 request,
                 accessToken
         ).header("Location"));
+    }
+
+    private static void callDeploy(Long couponGroupId, String accessToken) {
+        CommonRestAssuredUtils.post(
+                "/coupon-groups/{couponId}/deploy", couponGroupId,
+                accessToken
+        );
     }
 
     private static Long getIdFrom(String location) {

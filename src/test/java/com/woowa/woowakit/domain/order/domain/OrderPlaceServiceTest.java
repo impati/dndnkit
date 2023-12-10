@@ -175,21 +175,24 @@ class OrderPlaceServiceTest {
             final CouponTarget couponTarget,
             final LocalDate now
     ) {
-        CouponGroup couponGroup = saveCouponGroup(couponTarget, couponType, discount);
+        CouponGroup couponGroup = saveDeployedCouponGroup(couponTarget, couponType, discount);
 
-        return couponRepository.save(couponGroup.makeCoupon(memberId, now));
+        return couponRepository.save(couponGroup.issueCoupon(memberId, now));
     }
 
-    private CouponGroup saveCouponGroup(
+    private CouponGroup saveDeployedCouponGroup(
             final CouponTarget couponTarget,
             final CouponType couponType,
             final int discount
     ) {
-        return couponGroupRepository.save(getDefaultCouponGroupBuilder()
+        CouponGroup couponGroup = getDefaultCouponGroupBuilder()
                 .couponType(couponType)
                 .minimumOrderAmount(17000)
                 .discount(discount)
                 .couponTarget(couponTarget)
-                .build());
+                .build();
+        couponGroup.deploy();
+        couponGroupRepository.save(couponGroup);
+        return couponGroup;
     }
 }

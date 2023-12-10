@@ -1,6 +1,7 @@
 package com.woowa.woowakit.domain.coupon.domain;
 
 import com.woowa.woowakit.domain.coupon.exception.CouponGroupExpiredException;
+import com.woowa.woowakit.domain.coupon.exception.IssueCouponException;
 import com.woowa.woowakit.domain.model.BaseEntity;
 import com.woowa.woowakit.domain.model.ExpiryDate;
 import java.time.Duration;
@@ -97,18 +98,22 @@ public class CouponGroup extends BaseEntity {
         this.couponGroupStatus = CouponGroupStatus.DEPLOY;
     }
 
+    public void shutDown() {
+        if (this.couponGroupStatus == CouponGroupStatus.DEPLOY) {
+            this.couponGroupStatus = CouponGroupStatus.SHUT_DOWN;
+        }
+    }
+
     public boolean isLimitType() {
         return this.couponDeploy.getCouponDeployType() == CouponDeployType.LIMIT;
     }
 
-    public boolean isAvailable(final LocalDate now) {
-        return now.isBefore(endDate.getValue()) || now.isEqual(endDate.getValue());
+    public boolean isDeployStatus() {
+        return this.couponGroupStatus == CouponGroupStatus.DEPLOY;
     }
 
-    public Coupon makeCoupon(final Long memberId, final LocalDate now) {
-        if (!isAvailable(now)) {
-            throw new CouponGroupExpiredException();
-        }
+    public Coupon issueCoupon(final Long memberId, final LocalDate now) {
+        validateIssueCouponGroup(now);
         return Coupon.builder()
                 .couponType(couponType)
                 .discount(discount.value)
@@ -118,6 +123,15 @@ public class CouponGroup extends BaseEntity {
                 .memberId(memberId)
                 .minimumOrderAmount(minimumOrderAmount.getValue())
                 .build();
+    }
+
+    private void validateIssueCouponGroup(final LocalDate now) {
+        if (!(now.isBefore(endDate.getValue()) || now.isEqual(endDate.getValue()))) {
+            throw new CouponGroupExpiredException();
+        }
+        if (couponGroupStatus != CouponGroupStatus.DEPLOY) {
+            throw new IssueCouponException();
+        }
     }
 
     public int getDeployAmount() {

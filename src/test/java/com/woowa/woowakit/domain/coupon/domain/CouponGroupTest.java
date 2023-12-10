@@ -1,6 +1,7 @@
 package com.woowa.woowakit.domain.coupon.domain;
 
 import com.woowa.woowakit.domain.coupon.exception.CouponGroupExpiredException;
+import com.woowa.woowakit.domain.coupon.exception.IssueCouponException;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -55,28 +56,28 @@ class CouponGroupTest {
 
         couponGroup.deploy();
 
-        assertThat(couponGroup.getCouponGroupStatus()).isEqualTo(CouponGroupStatus.DEPLOY);
+        assertThat(couponGroup.isDeployStatus()).isTrue();
     }
 
     @Test
-    @DisplayName("쿠폰 그룹 만료기간이 지나지 않으면 사용할 수 있다.")
-    void isAvailableTrue() {
-        CouponGroup couponGroup = getCouponGroupBuilder()
-                .endDate(LocalDate.of(3023, 12, 31))
-                .build();
+    @DisplayName("쿠폰 그룹 발급을 모두 완료하거나 쿠폰 그룹 비활성화하고 싶다면 쿠폰 그룹 상태는 SHUT_DOWN 이다.")
+    void couponGroupShowDown() {
+        CouponGroup couponGroup = getDefaultCouponGroup();
+        couponGroup.deploy();
 
-        assertThat(couponGroup.isAvailable(LocalDate.of(3023, 12, 31))).isTrue();
-        assertThat(couponGroup.isAvailable(LocalDate.of(3023, 12, 11))).isTrue();
+        couponGroup.shutDown();
+
+        assertThat(couponGroup.getCouponGroupStatus()).isEqualTo(CouponGroupStatus.SHUT_DOWN);
     }
 
     @Test
-    @DisplayName("쿠폰 그룹 만료기간이 지나면 사용할 수 없다.")
-    void isAvailableFalse() {
-        CouponGroup couponGroup = getCouponGroupBuilder()
-                .endDate(LocalDate.of(3023, 12, 31))
-                .build();
+    @DisplayName("쿠폰 그룹 발급을 모두 완료하거나 쿠폰 그룹 비활성화하고 싶다면 쿠폰 그룹 상태는 배포 상태여야한다.")
+    void couponGroupShowDownFail() {
+        CouponGroup couponGroup = getDefaultCouponGroup();
 
-        assertThat(couponGroup.isAvailable(LocalDate.of(3024, 1, 1))).isFalse();
+        couponGroup.shutDown();
+
+        assertThat(couponGroup.getCouponGroupStatus()).isNotEqualTo(CouponGroupStatus.SHUT_DOWN);
     }
 
     @Test
@@ -134,13 +135,25 @@ class CouponGroupTest {
     }
 
     @Test
+    @DisplayName("쿠폰 그룹이 배포 상태가 아니라면 쿠폰을 발급하는데 실패한다.")
+    void makeCouponFailBecauseOfDeploy() {
+        CouponGroup couponGroup = getCouponGroup(CouponType.RATED, 10);
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+
+        assertThatCode(() -> couponGroup.issueCoupon(memberId, now))
+                .isInstanceOf(IssueCouponException.class);
+    }
+
+    @Test
     @DisplayName("정률 쿠폰 그룹로 쿠폰을 생성한다.")
     void makeRateCoupon() {
         CouponGroup couponGroup = getCouponGroup(CouponType.RATED, 10);
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3023, 12, 31);
+        couponGroup.deploy();
 
-        Coupon coupon = couponGroup.makeCoupon(memberId, now);
+        Coupon coupon = couponGroup.issueCoupon(memberId, now);
 
         assertThat(coupon)
                 .extracting(Coupon::getDiscount, Coupon::getMemberId)
@@ -153,8 +166,9 @@ class CouponGroupTest {
         CouponGroup couponGroup = getCouponGroup(CouponType.FIXED, 1000);
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3023, 12, 31);
+        couponGroup.deploy();
 
-        Coupon coupon = couponGroup.makeCoupon(memberId, now);
+        Coupon coupon = couponGroup.issueCoupon(memberId, now);
 
         assertThat(coupon)
                 .extracting(Coupon::getDiscount, Coupon::getMemberId)
@@ -167,8 +181,9 @@ class CouponGroupTest {
         CouponGroup couponGroup = getCouponGroup(CouponType.FIXED, 1000);
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3033, 12, 31);
+        couponGroup.deploy();
 
-        assertThatCode(() -> couponGroup.makeCoupon(memberId, now))
+        assertThatCode(() -> couponGroup.issueCoupon(memberId, now))
                 .isInstanceOf(CouponGroupExpiredException.class)
                 .hasMessage("쿠폰 그룹이 만료되었습니다.");
     }

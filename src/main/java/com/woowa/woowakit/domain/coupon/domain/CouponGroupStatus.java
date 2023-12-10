@@ -6,5 +6,6 @@ import lombok.Getter;
 public enum CouponGroupStatus {
 
     CREATED,
-    DEPLOY
+    DEPLOY,
+    SHUT_DOWN
 }
