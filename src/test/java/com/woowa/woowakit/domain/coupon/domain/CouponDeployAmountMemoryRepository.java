@@ -16,10 +16,21 @@ public class CouponDeployAmountMemoryRepository implements CouponDeployAmountRep
 
     @Override
     public void decrease(final CouponGroup couponGroup) {
+        if (!couponGroup.isLimitType()) {
+            return;
+        }
         Long decrement = decrement(couponGroup);
         if (decrement < 0) {
             throw new ExhaustedCouponDeployAmountException();
         }
+    }
+
+    @Override
+    public void increase(final CouponGroup couponGroup) {
+        if (!couponGroup.isLimitType()) {
+            return;
+        }
+        store.put(getKey(couponGroup.getId()), store.get(getKey(couponGroup.getId())) + 1);
     }
 
     private synchronized Long decrement(final CouponGroup couponGroup) {
