@@ -113,6 +113,7 @@ class CouponCommandServiceTest {
 
         assertThatCode(() -> couponCommandService.create(memberId, persistentCouponGroup.getId(), now))
                 .isInstanceOf(ExhaustedCouponDeployAmountException.class);
+        couponDeployAmountRepository.clear(persistentCouponGroup.getId());
     }
 
     @ParameterizedTest
@@ -140,7 +141,7 @@ class CouponCommandServiceTest {
             });
         }
         countDownLatch.await();
-        
+
         assertThat(couponRepository.count()).isEqualTo(deployAmount);
         couponDeployAmountRepository.clear(persistentCouponGroup.getId());
     }
@@ -148,14 +149,19 @@ class CouponCommandServiceTest {
     @Test
     @DisplayName("쿠폰그룹이 만료되었다면 사용자 쿠폰을 생성하는데 실패한다.")
     void createCouponFail() {
+        int deployAmount = 100;
         CouponGroup persistentCouponGroup = couponGroupRepository.save(getDeployedCouponGroup(
-                CouponDeploy.getDeployNoLimitInstance()
+                CouponDeploy.getDeployLimitInstance(deployAmount)
         ));
+        couponDeployAmountRepository.deploy(persistentCouponGroup.getId(), deployAmount);
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3024, 12, 31);
 
         assertThatCode(() -> couponCommandService.create(memberId, persistentCouponGroup.getId(), now))
                 .isInstanceOf(CouponGroupExpiredException.class);
+        assertThat(couponDeployAmountRepository.getCouponDeployAmount(persistentCouponGroup.getId()))
+                .isEqualTo(deployAmount);
+        couponDeployAmountRepository.clear(persistentCouponGroup.getId());
     }
 
     @Test

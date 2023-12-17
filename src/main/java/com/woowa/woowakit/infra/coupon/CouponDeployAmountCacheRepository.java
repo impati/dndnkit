@@ -21,10 +21,18 @@ public class CouponDeployAmountCacheRepository implements CouponDeployAmountRepo
 
     @Override
     public void decrease(final CouponGroup couponGroup) {
+        if (!couponGroup.isLimitType()) {
+            return;
+        }
         long amount = redisTemplate.opsForValue().decrement(getKey(couponGroup.getId()));
         if (amount < 0) {
             throw new ExhaustedCouponDeployAmountException();
         }
+    }
+
+    @Override
+    public void increase(final CouponGroup couponGroup) {
+        redisTemplate.opsForValue().increment(getKey(couponGroup.getId()));
     }
 
     @Override
