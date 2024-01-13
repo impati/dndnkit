@@ -30,7 +30,7 @@ public class CouponFixture {
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .couponTarget(CouponTarget.all())
-                .expiryDate(LocalDate.of(2023, 12, 31))
+                .expiryDate(LocalDate.of(3023, 12, 31))
                 .minimumOrderAmount(17000)
                 .memberId(1L)
                 .name("한식 카테고리 밀키트 1000원 할인 쿠폰");

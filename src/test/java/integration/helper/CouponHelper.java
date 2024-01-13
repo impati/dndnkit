@@ -23,7 +23,7 @@ public class CouponHelper {
         return ProductCouponGroupCreateRequest.of(
                 "default",
                 7L,
-                LocalDate.of(2023, 12, 31),
+                LocalDate.of(3023, 12, 31),
                 couponType,
                 productId,
                 17000,
@@ -42,7 +42,7 @@ public class CouponHelper {
         return BrandCouponGroupCreateRequest.of(
                 "default",
                 7L,
-                LocalDate.of(2023, 12, 31),
+                LocalDate.of(3023, 12, 31),
                 couponType,
                 productBrand,
                 17000,
@@ -61,7 +61,7 @@ public class CouponHelper {
         return CategoryCouponGroupCreateRequest.of(
                 "default",
                 7L,
-                LocalDate.of(2023, 12, 31),
+                LocalDate.of(3023, 12, 31),
                 couponType,
                 productCategory,
                 17000,
@@ -75,7 +75,7 @@ public class CouponHelper {
         return new CouponGroupCreateRequest(
                 "default",
                 7L,
-                LocalDate.of(2023, 12, 31),
+                LocalDate.of(3023, 12, 31),
                 CouponType.FIXED,
                 17000,
                 1000,
@@ -88,7 +88,7 @@ public class CouponHelper {
         return new CouponGroupCreateRequest(
                 "default",
                 7L,
-                LocalDate.of(2023, 12, 31),
+                LocalDate.of(3023, 12, 31),
                 CouponType.FIXED,
                 17000,
                 1000,
