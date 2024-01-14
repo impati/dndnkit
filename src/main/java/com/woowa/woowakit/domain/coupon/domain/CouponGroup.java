@@ -61,6 +61,10 @@ public class CouponGroup extends BaseEntity {
     @Column(name = "coupon_group_status")
     private CouponGroupStatus couponGroupStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "coupon_group_issue_type")
+    private IssueType issueType;
+
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "discount"))
     private Discount discount;
@@ -74,7 +78,8 @@ public class CouponGroup extends BaseEntity {
             final CouponTarget couponTarget,
             final CouponType couponType,
             final int discount,
-            final CouponDeploy couponDeploy
+            final CouponDeploy couponDeploy,
+            final IssueType issueType
     ) {
         Assert.hasText(name, "쿠폰 이름은 필수 입니다.");
         Assert.notNull(duration, "쿠폰 유효기간은 필수 입니다.");
@@ -82,6 +87,7 @@ public class CouponGroup extends BaseEntity {
         Assert.notNull(couponDeploy, "쿠폰 배포 설정은 필수 입니다.");
         Assert.notNull(couponTarget, "쿠폰 적용 대상은 필수 값입니다.");
         Assert.notNull(couponType, "쿠폰 타입은 필수 값입니다.");
+        Assert.notNull(issueType, "쿠폰 발급 타입은 필수 값입니다.");
         Assert.isTrue(discount > 0, "할인 금액 또는 할인률은 양수여야합니다.");
         this.name = name;
         this.duration = duration.toDays();
@@ -91,6 +97,7 @@ public class CouponGroup extends BaseEntity {
         this.couponType = couponType;
         this.discount = couponType.getDiscount(discount, minimumOrderAmount);
         this.couponDeploy = couponDeploy;
+        this.issueType = issueType;
         this.couponGroupStatus = CouponGroupStatus.CREATED;
     }
 

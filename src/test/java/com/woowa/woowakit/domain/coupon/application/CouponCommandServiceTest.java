@@ -8,6 +8,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.coupon.exception.CouponGroupExpiredException;
 import com.woowa.woowakit.domain.coupon.exception.ExhaustedCouponDeployAmountException;
 import com.woowa.woowakit.domain.coupon.exception.IssueCouponException;
@@ -187,6 +188,7 @@ class CouponCommandServiceTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(couponDeploy)
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 

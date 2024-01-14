@@ -5,6 +5,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponDeployType;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import java.time.Duration;
 import java.time.LocalDate;
 import javax.validation.constraints.Min;
@@ -41,6 +42,9 @@ public class CouponGroupCreateRequest {
 
     protected Integer couponDeployAmount;
 
+    @NotNull(message = "쿠폰 발급 타입은 필수 입니다.")
+    protected IssueType issueType;
+
     public CouponGroup toEntity(final CouponTarget couponTarget) {
         CouponDeploy couponDeploy = CouponDeploy.getDeployNoLimitInstance();
         if (couponDeployType == CouponDeployType.LIMIT) {
@@ -55,6 +59,7 @@ public class CouponGroupCreateRequest {
                 .discount(discount)
                 .couponTarget(couponTarget)
                 .couponDeploy(couponDeploy)
+                .issueType(issueType)
                 .build();
     }
 }

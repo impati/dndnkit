@@ -5,6 +5,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -59,6 +60,7 @@ class CouponGroupQueryServiceTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .discount(15);
     }
 }
