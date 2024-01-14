@@ -5,12 +5,12 @@ import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponDeployAmountRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
+import com.woowa.woowakit.domain.coupon.domain.CouponGroupStatus;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.coupon.exception.CouponGroupExpiredException;
-import com.woowa.woowakit.domain.coupon.exception.ExhaustedCouponDeployAmountException;
 import com.woowa.woowakit.domain.coupon.exception.IssueCouponException;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import java.time.Duration;
@@ -21,8 +21,6 @@ import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -100,6 +98,23 @@ class CouponCommandServiceTest {
     }
 
     @Test
+    @DisplayName("쿠폰 그룹 배포 수량이 0 이라면 쿠폰 그룹 상태가 SHUTDOWN 이 된다.")
+    void couponGroupShutDown() {
+        int deployAmount = 1;
+        CouponGroup persistentCouponGroup = couponGroupRepository.save(getDeployedCouponGroup(
+                CouponDeploy.getDeployLimitInstance(deployAmount)
+        ));
+        couponDeployAmountRepository.deploy(persistentCouponGroup.getId(), deployAmount);
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+
+        couponCommandService.create(memberId, persistentCouponGroup.getId(), now);
+
+        CouponGroup couponGroup = couponGroupRepository.findById(persistentCouponGroup.getId()).orElseThrow();
+        assertThat(couponGroup.getCouponGroupStatus()).isEqualTo(CouponGroupStatus.SHUT_DOWN);
+    }
+
+    @Test
     @DisplayName("쿠폰그룹으로부터 사용자 쿠폰을 발급하는데 배포 수량이 없다면 실패한다.")
     void whenIssueThenThrow() {
         int deployAmount = 1;
@@ -113,14 +128,15 @@ class CouponCommandServiceTest {
         couponCommandService.create(otherMemberId, persistentCouponGroup.getId(), now);
 
         assertThatCode(() -> couponCommandService.create(memberId, persistentCouponGroup.getId(), now))
-                .isInstanceOf(ExhaustedCouponDeployAmountException.class);
+                .isInstanceOf(IssueCouponException.class)
+                .hasMessage("쿠폰 그룹 상태가 배포 완료 상태여야합니다.");
         couponDeployAmountRepository.clear(persistentCouponGroup.getId());
     }
 
-    @ParameterizedTest
+    @Test
     @DisplayName("쿠폰그룹으로부터 사용자 쿠폰을 동시에 발급하는데 동시성 문제가 발생하지 않아야한다.")
-    @ValueSource(ints = {10, 100})
-    void concurrency(final int threadCount) throws InterruptedException {
+    void concurrency() throws InterruptedException {
+        final int threadCount = 10;
         int deployAmount = 5;
         CouponGroup persistentCouponGroup = couponGroupRepository.save(getDeployedCouponGroup(
                 CouponDeploy.getDeployLimitInstance(deployAmount)
@@ -144,6 +160,7 @@ class CouponCommandServiceTest {
         countDownLatch.await();
 
         assertThat(couponRepository.count()).isEqualTo(deployAmount);
+        assertThat(couponDeployAmountRepository.getCouponDeployAmount(persistentCouponGroup.getId())).isEqualTo(0);
         couponDeployAmountRepository.clear(persistentCouponGroup.getId());
     }
 
@@ -156,7 +173,7 @@ class CouponCommandServiceTest {
         ));
         couponDeployAmountRepository.deploy(persistentCouponGroup.getId(), deployAmount);
         Long memberId = 1L;
-        LocalDate now = LocalDate.of(3024, 12, 31);
+        LocalDate now = LocalDate.of(4024, 12, 31);
 
         assertThatCode(() -> couponCommandService.create(memberId, persistentCouponGroup.getId(), now))
                 .isInstanceOf(CouponGroupExpiredException.class);

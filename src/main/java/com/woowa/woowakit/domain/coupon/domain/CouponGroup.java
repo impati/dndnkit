@@ -71,6 +71,7 @@ public class CouponGroup extends BaseEntity {
 
     @Builder
     private CouponGroup(
+            final Long id,
             final String name,
             final Duration duration,
             final LocalDate endDate,
@@ -89,6 +90,7 @@ public class CouponGroup extends BaseEntity {
         Assert.notNull(couponType, "쿠폰 타입은 필수 값입니다.");
         Assert.notNull(issueType, "쿠폰 발급 타입은 필수 값입니다.");
         Assert.isTrue(discount > 0, "할인 금액 또는 할인률은 양수여야합니다.");
+        this.id = id;
         this.name = name;
         this.duration = duration.toDays();
         this.endDate = ExpiryDate.from(endDate);

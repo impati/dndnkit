@@ -4,7 +4,7 @@ public interface CouponDeployAmountRepository {
 
     void deploy(final Long couponGroupId, final int CouponDeployAmount);
 
-    void decrease(final CouponGroup couponGroup);
+    long decrease(final CouponGroup couponGroup);
 
     void increase(final CouponGroup couponGroup);
 
