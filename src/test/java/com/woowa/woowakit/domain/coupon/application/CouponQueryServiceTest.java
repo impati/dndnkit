@@ -7,6 +7,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.product.domain.ProductBrand;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -84,6 +85,13 @@ class CouponQueryServiceTest {
                         tuple("한식 밀키트 10% 할인 쿠폰", CouponTarget.all(), memberId));
     }
 
+    private CouponGroup getDeployedCouponGroup(final CouponTarget couponTarget) {
+        CouponGroup couponGroup = getCouponGroup(couponTarget);
+        couponGroup.deploy();
+
+        return couponGroup;
+    }
+
     private CouponGroup getCouponGroup(final CouponTarget couponTarget) {
         return CouponGroup.builder()
                 .name("한식 밀키트 10% 할인 쿠폰")
@@ -94,13 +102,7 @@ class CouponQueryServiceTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
-    }
-
-    private CouponGroup getDeployedCouponGroup(final CouponTarget couponTarget) {
-        CouponGroup couponGroup = getCouponGroup(couponTarget);
-        couponGroup.deploy();
-
-        return couponGroup;
     }
 }

@@ -3,6 +3,7 @@ package integration.helper;
 import com.woowa.woowakit.domain.coupon.domain.CouponDeploy;
 import com.woowa.woowakit.domain.coupon.domain.CouponDeployType;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.coupon.dto.request.BrandCouponGroupCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.CategoryCouponGroupCreateRequest;
 import com.woowa.woowakit.domain.coupon.dto.request.CouponCreateRequest;
@@ -29,7 +30,8 @@ public class CouponHelper {
                 17000,
                 discount,
                 CouponDeployType.NO_LIMIT,
-                null
+                null,
+                IssueType.REPEATABLE
         );
     }
 
@@ -48,7 +50,8 @@ public class CouponHelper {
                 17000,
                 discount,
                 CouponDeployType.NO_LIMIT,
-                null
+                null,
+                IssueType.REPEATABLE
         );
     }
 
@@ -67,7 +70,8 @@ public class CouponHelper {
                 17000,
                 discount,
                 CouponDeployType.NO_LIMIT,
-                null
+                null,
+                IssueType.REPEATABLE
         );
     }
 
@@ -80,7 +84,8 @@ public class CouponHelper {
                 17000,
                 1000,
                 CouponDeployType.NO_LIMIT,
-                null
+                null,
+                IssueType.REPEATABLE
         );
     }
 
@@ -93,7 +98,8 @@ public class CouponHelper {
                 17000,
                 1000,
                 couponDeploy.getCouponDeployType(),
-                couponDeploy.getDeployAmount()
+                couponDeploy.getDeployAmount(),
+                IssueType.REPEATABLE
         );
     }
 

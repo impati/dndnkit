@@ -209,6 +209,44 @@ class CouponGroupTest {
         assertThat(limitType).isFalse();
     }
 
+    @Test
+    @DisplayName("쿠폰 그룹을 생성할 때 쿠폰 발급 타입은 필수이다.")
+    void issueType() {
+        assertThatCode(this::getCouponGroupWithoutIssueType)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("쿠폰 발급 타입은 필수 값입니다.");
+
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 반복 발급 불가인 경우 true 를 응답한다.")
+    void NO_REPEATABLE() {
+        CouponGroup couponGroup = getCouponGroupBuilder().issueType(IssueType.NO_REPEATABLE).build();
+
+        assertThat(couponGroup.isNoRepeatable()).isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 반복 발급 불가인 경우 true 를 응답한다.")
+    void REPEATABLE_AFTER_USED() {
+        CouponGroup couponGroup = getCouponGroupBuilder().issueType(IssueType.REPEATABLE_AFTER_USED).build();
+
+        assertThat(couponGroup.isRepeatableAfterUsed()).isTrue();
+    }
+
+    private CouponGroup getCouponGroupWithoutIssueType() {
+        return CouponGroup.builder()
+                .name("default")
+                .duration(Duration.ofDays(3))
+                .endDate(LocalDate.of(2023, 12, 31))
+                .minimumOrderAmount(17000)
+                .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
+                .couponType(CouponType.RATED)
+                .discount(15)
+                .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .build();
+    }
+
     private CouponGroup getCouponGroupWithoutCouponDeploy() {
         return CouponGroup.builder()
                 .name("default")
@@ -218,6 +256,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -230,6 +269,7 @@ class CouponGroupTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -242,6 +282,7 @@ class CouponGroupTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -254,6 +295,7 @@ class CouponGroupTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -266,6 +308,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .discount(15)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -278,6 +321,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .build();
     }
 
@@ -302,6 +346,7 @@ class CouponGroupTest {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .discount(15)
+                .issueType(IssueType.REPEATABLE)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance());
     }
 }

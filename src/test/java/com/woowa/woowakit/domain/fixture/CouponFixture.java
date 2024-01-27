@@ -7,6 +7,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup.CouponGroupBuilder;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -22,11 +23,13 @@ public class CouponFixture {
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.RATED)
                 .couponDeploy(CouponDeploy.getDeployNoLimitInstance())
+                .issueType(IssueType.REPEATABLE)
                 .discount(15);
     }
 
     public static CouponBuilder getAllCouponBuilder() {
         return Coupon.builder()
+                .couponGroup(getDefaultCouponGroupBuilder().build())
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .couponTarget(CouponTarget.all())

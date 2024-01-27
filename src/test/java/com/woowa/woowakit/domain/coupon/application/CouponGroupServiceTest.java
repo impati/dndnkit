@@ -6,6 +6,7 @@ import com.woowa.woowakit.domain.coupon.domain.CouponGroupRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
+import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.coupon.dto.request.ProductCouponGroupCreateRequest;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -52,7 +53,8 @@ class CouponGroupServiceTest {
                 17000,
                 15000,
                 CouponDeployType.NO_LIMIT,
-                null
+                null,
+                IssueType.REPEATABLE
         );
 
         Long CouponGroupId = couponGroupCommandService.create(couponTarget, request);

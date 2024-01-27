@@ -15,14 +15,16 @@ public class CouponDeployAmountMemoryRepository implements CouponDeployAmountRep
     }
 
     @Override
-    public void decrease(final CouponGroup couponGroup) {
+    public long decrease(final CouponGroup couponGroup) {
         if (!couponGroup.isLimitType()) {
-            return;
+            throw new IllegalStateException("쿠폰 그룹이 무제한 수량 발급인 경우 수량을 적재하거나 감소시킬 수 없습니다.");
         }
         Long decrement = decrement(couponGroup);
         if (decrement < 0) {
             throw new ExhaustedCouponDeployAmountException();
         }
+
+        return decrement;
     }
 
     @Override
