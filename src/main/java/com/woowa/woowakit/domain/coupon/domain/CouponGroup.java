@@ -164,6 +164,14 @@ public class CouponGroup extends BaseEntity {
         return discount.getValue();
     }
 
+    public boolean isNoRepeatable() {
+        return this.issueType == IssueType.NO_REPEATABLE;
+    }
+
+    public boolean isRepeatableAfterUsed() {
+        return this.issueType == IssueType.REPEATABLE_AFTER_USED;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

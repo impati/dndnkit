@@ -11,18 +11,24 @@ import com.woowa.woowakit.domain.coupon.domain.CouponTarget;
 import com.woowa.woowakit.domain.coupon.domain.CouponType;
 import com.woowa.woowakit.domain.coupon.domain.IssueType;
 import com.woowa.woowakit.domain.coupon.exception.CouponGroupExpiredException;
+import com.woowa.woowakit.domain.coupon.exception.CouponIssueTypeException;
 import com.woowa.woowakit.domain.coupon.exception.IssueCouponException;
 import com.woowa.woowakit.domain.product.domain.ProductCategory;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -186,7 +192,7 @@ class CouponCommandServiceTest {
     @DisplayName("쿠폰 그룹이 배포상태가 아니라면 사용자 쿠폰을 생성하는데 실패한다.")
     void issueCouponFail() {
         CouponGroup persistentCouponGroup = couponGroupRepository.save(
-                getCouponGroup(CouponDeploy.getDeployNoLimitInstance())
+                getCouponGroup(CouponDeploy.getDeployNoLimitInstance(), IssueType.REPEATABLE)
         );
         Long memberId = 1L;
         LocalDate now = LocalDate.of(3023, 12, 31);
@@ -195,7 +201,90 @@ class CouponCommandServiceTest {
                 .isInstanceOf(IssueCouponException.class);
     }
 
-    private CouponGroup getCouponGroup(final CouponDeploy couponDeploy) {
+    @Test
+    @DisplayName("회원이 이미 같은 쿠폰 그룹의 쿠폰을 가지고 있는 경우 '반복 발급 타입'일 경우에만 발급")
+    void issueCouponByREPEATABLE() {
+        CouponGroup couponGroup = couponGroupRepository.save(
+                getDeployedCouponGroup(CouponDeploy.getDeployNoLimitInstance(), IssueType.REPEATABLE)
+        );
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+        couponCommandService.create(memberId, couponGroup.getId(), now);
+
+        Long couponId = couponCommandService.create(memberId, couponGroup.getId(), now);
+
+        assertThat(couponId).isNotNull();
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원이 이미 같은 쿠폰 그룹의 쿠폰을 가지고 있는 경우 '사용 후 재발급' , '재발급 불가'일 경우에 발급에 실패한다")
+    @EnumSource(value = IssueType.class, mode = Mode.EXCLUDE, names = {"REPEATABLE"})
+    void issueCouponFailByNOT_REPEATABLE(IssueType issueType) {
+        CouponGroup couponGroup = couponGroupRepository.save(
+                getDeployedCouponGroup(CouponDeploy.getDeployNoLimitInstance(), issueType)
+        );
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+        couponCommandService.create(memberId, couponGroup.getId(), now);
+
+        assertThatCode(() -> couponCommandService.create(memberId, couponGroup.getId(), now))
+                .isInstanceOf(CouponIssueTypeException.class)
+                .hasMessageContaining("쿠폰 발급에 실패했습니다.");
+    }
+
+    @Transactional
+    @ParameterizedTest
+    @DisplayName("회원이 발급 하고자 하는 쿠폰 그룹의 쿠폰을 가지고 있지 않지만 이력이 있는 경우 '반복 발급 타입' , '사용 후 반복 발급' 경우에만 발급")
+    @EnumSource(value = IssueType.class, mode = Mode.EXCLUDE, names = {"NO_REPEATABLE"})
+    void issueCouponByExcludeNO_REPEATABLE(IssueType issueType) {
+        CouponGroup couponGroup = couponGroupRepository.save(
+                getDeployedCouponGroup(CouponDeploy.getDeployNoLimitInstance(), issueType)
+        );
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+        couponCommandService.create(memberId, couponGroup.getId(), now);
+        List<Coupon> memberCoupons = couponRepository.findCoupon(memberId, now);
+        memberCoupons.forEach(Coupon::used);
+
+        Long couponId = couponCommandService.create(memberId, couponGroup.getId(), now);
+
+        assertThat(couponId).isNotNull();
+    }
+
+    @Transactional
+    @Test
+    @DisplayName("회원이 발급 하고자 하는 쿠폰 그룹의 쿠폰을 가지고 있지 않지만 이력이 있는 경우 쿠폰 그룹 발급 타입이 '반복 불가'인 경우 발급에 실패한다.")
+    void issueCouponFailByNO_REPEATABLE() {
+        CouponGroup couponGroup = couponGroupRepository.save(
+                getDeployedCouponGroup(CouponDeploy.getDeployNoLimitInstance(), IssueType.NO_REPEATABLE)
+        );
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+        couponCommandService.create(memberId, couponGroup.getId(), now);
+        List<Coupon> memberCoupons = couponRepository.findCoupon(memberId, now);
+        memberCoupons.forEach(Coupon::used);
+
+        assertThatCode(() -> couponCommandService.create(memberId, couponGroup.getId(), now))
+                .isInstanceOf(CouponIssueTypeException.class)
+                .hasMessage("쿠폰 발급에 실패했습니다. 반복 발급이 불가능한 쿠폰 그룹입니다.");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = IssueType.class)
+    @DisplayName("회원이 쿠폰 그룹의 쿠폰을 가지고 있지도 , 이력도 없다면 모든 타입에 대해 발급한다.")
+    void issueCouponGroupByAll(IssueType issueType) {
+        CouponGroup couponGroup = couponGroupRepository.save(
+                getDeployedCouponGroup(CouponDeploy.getDeployNoLimitInstance(), issueType)
+        );
+        Long memberId = 1L;
+        LocalDate now = LocalDate.of(3023, 12, 31);
+
+        Long couponId = couponCommandService.create(memberId, couponGroup.getId(), now);
+
+        assertThat(couponId).isNotNull();
+    }
+
+    private CouponGroup getCouponGroup(final CouponDeploy couponDeploy, final IssueType issueType) {
         return CouponGroup.builder()
                 .name("한식 밀키트 10% 할인 쿠폰")
                 .duration(Duration.ofDays(3))
@@ -205,12 +294,19 @@ class CouponCommandServiceTest {
                 .couponType(CouponType.RATED)
                 .discount(15)
                 .couponDeploy(couponDeploy)
-                .issueType(IssueType.REPEATABLE)
+                .issueType(issueType)
                 .build();
     }
 
     private CouponGroup getDeployedCouponGroup(final CouponDeploy couponDeploy) {
-        CouponGroup couponGroup = getCouponGroup(couponDeploy);
+        CouponGroup couponGroup = getCouponGroup(couponDeploy, IssueType.REPEATABLE);
+        couponGroup.deploy();
+
+        return couponGroup;
+    }
+
+    private CouponGroup getDeployedCouponGroup(final CouponDeploy couponDeploy, final IssueType issueType) {
+        CouponGroup couponGroup = getCouponGroup(couponDeploy, issueType);
         couponGroup.deploy();
 
         return couponGroup;

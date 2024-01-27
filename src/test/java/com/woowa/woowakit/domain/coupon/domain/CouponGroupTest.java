@@ -212,10 +212,26 @@ class CouponGroupTest {
     @Test
     @DisplayName("쿠폰 그룹을 생성할 때 쿠폰 발급 타입은 필수이다.")
     void issueType() {
-        assertThatCode(() -> getCouponGroupWithoutIssueType())
+        assertThatCode(this::getCouponGroupWithoutIssueType)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("쿠폰 발급 타입은 필수 값입니다.");
 
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 반복 발급 불가인 경우 true 를 응답한다.")
+    void NO_REPEATABLE() {
+        CouponGroup couponGroup = getCouponGroupBuilder().issueType(IssueType.NO_REPEATABLE).build();
+
+        assertThat(couponGroup.isNoRepeatable()).isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 그룹이 반복 발급 불가인 경우 true 를 응답한다.")
+    void REPEATABLE_AFTER_USED() {
+        CouponGroup couponGroup = getCouponGroupBuilder().issueType(IssueType.REPEATABLE_AFTER_USED).build();
+
+        assertThat(couponGroup.isRepeatableAfterUsed()).isTrue();
     }
 
     private CouponGroup getCouponGroupWithoutIssueType() {

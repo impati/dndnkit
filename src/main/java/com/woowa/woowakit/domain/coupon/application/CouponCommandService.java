@@ -3,6 +3,7 @@ package com.woowa.woowakit.domain.coupon.application;
 import com.woowa.woowakit.domain.coupon.domain.Coupon;
 import com.woowa.woowakit.domain.coupon.domain.CouponDeployAmountManager;
 import com.woowa.woowakit.domain.coupon.domain.CouponGroup;
+import com.woowa.woowakit.domain.coupon.domain.CouponHistory;
 import com.woowa.woowakit.domain.coupon.domain.CouponRepository;
 import com.woowa.woowakit.domain.coupon.domain.event.CouponIssueEvent;
 import java.time.LocalDate;
@@ -27,6 +28,8 @@ public class CouponCommandService {
             final LocalDate now
     ) {
         CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(couponGroupId);
+        CouponHistory couponHistory = CouponHistory.of(couponGroup, couponRepository.getCouponByCouponGroup(couponGroup, memberId));
+        couponHistory.validateIssueCoupon();
         Coupon coupon = couponGroup.issueCoupon(memberId, now);
         try {
             couponDeployAmountManager.decreaseDeployAmount(couponGroup);
