@@ -203,6 +203,7 @@ class CouponTest {
 
     private Coupon.CouponBuilder getRateCouponBuilder() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(10)
                 .couponType(CouponType.RATED)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))

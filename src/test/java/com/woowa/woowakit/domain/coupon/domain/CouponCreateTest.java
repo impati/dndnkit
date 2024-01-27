@@ -16,6 +16,7 @@ class CouponCreateTest {
     @DisplayName("쿠폰 이름과 만료일 , 할인 금액과 최소 주문 금액, 쿠폰 적용 대상 입력 정액 할인 쿠폰을 생성할 수 있다.")
     void createFixedCoupon() {
         Coupon fixedCoupon = Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .expiryDate(LocalDate.of(3023, 12, 31))
@@ -46,6 +47,7 @@ class CouponCreateTest {
     @DisplayName("쿠폰 이름과 만료일 , 할인 금액과 최소 주문 금액, 쿠폰 적용 대상 입력 정률 할인 쿠폰을 생성할 수 있다.")
     void createRateCoupon() {
         Coupon rateCoupon = Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(10)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .expiryDate(LocalDate.of(3023, 12, 31))
@@ -154,6 +156,7 @@ class CouponCreateTest {
 
     private Coupon.CouponBuilder getDefaultFixedCouponBuilder() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .expiryDate(LocalDate.of(3023, 12, 31))
@@ -165,6 +168,7 @@ class CouponCreateTest {
 
     private Coupon getFixedCouponWithoutExpiryDate() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
@@ -176,6 +180,7 @@ class CouponCreateTest {
 
     private Coupon getFixedCouponWithoutCouponTarget() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .minimumOrderAmount(17000)
@@ -187,6 +192,7 @@ class CouponCreateTest {
 
     private Coupon getFixedCouponWithoutName() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
@@ -198,6 +204,7 @@ class CouponCreateTest {
 
     private Coupon getFixedCouponWithoutCouponType() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .expiryDate(LocalDate.of(3023, 12, 31))
@@ -209,6 +216,7 @@ class CouponCreateTest {
 
     private Coupon getFixedCouponWithoutMember() {
         return Coupon.builder()
+                .couponGroup(new CouponGroup())
                 .discount(1000)
                 .couponTarget(CouponTarget.from(ProductCategory.KOREAN))
                 .couponType(CouponType.FIXED)

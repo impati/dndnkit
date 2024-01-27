@@ -142,6 +142,7 @@ create table if not exists coupons
 (
     id                   bigint auto_increment not null,
     name                 varchar(255)          not null,
+    coupon_group_id      bigint                not null,
     expiry_date          date                  not null,
     minimum_order_amount int                   not null,
     coupon_target_type   varchar(255)          not null,

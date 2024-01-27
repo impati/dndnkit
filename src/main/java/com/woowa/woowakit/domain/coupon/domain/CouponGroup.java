@@ -124,6 +124,7 @@ public class CouponGroup extends BaseEntity {
     public Coupon issueCoupon(final Long memberId, final LocalDate now) {
         validateIssueCouponGroup(now);
         return Coupon.builder()
+                .couponGroup(this)
                 .couponType(couponType)
                 .discount(discount.value)
                 .expiryDate(now.plusDays(duration))

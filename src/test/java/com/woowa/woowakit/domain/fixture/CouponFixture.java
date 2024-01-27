@@ -29,6 +29,7 @@ public class CouponFixture {
 
     public static CouponBuilder getAllCouponBuilder() {
         return Coupon.builder()
+                .couponGroup(getDefaultCouponGroupBuilder().build())
                 .discount(1000)
                 .couponType(CouponType.FIXED)
                 .couponTarget(CouponTarget.all())
