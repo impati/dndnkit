@@ -22,6 +22,9 @@ spring:
     type: caffeine
     cache-names:
       - productsFirstRanking
+  redis:
+    host: localhost
+    port: 6379
 
 security:
   jwt:
