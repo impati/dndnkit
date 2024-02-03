@@ -28,17 +28,31 @@ public class CouponCommandService {
             final LocalDate now
     ) {
         CouponGroup couponGroup = couponGroupQueryService.getCouponGroup(couponGroupId);
+        validateIssueType(memberId, couponGroup);
+
+        Coupon coupon = couponGroup.issueCoupon(memberId, now);
+        Long persistCouponId = decreaseDeployAmountAndSaveCoupon(couponGroup, coupon);
+
+        sendIssueEvent(couponGroup);
+        return persistCouponId;
+    }
+
+    private void validateIssueType(final Long memberId, final CouponGroup couponGroup) {
         CouponHistory couponHistory = CouponHistory.of(couponGroup, couponRepository.getCouponByCouponGroup(couponGroup, memberId));
         couponHistory.validateIssueCoupon();
-        Coupon coupon = couponGroup.issueCoupon(memberId, now);
+    }
+
+    private Long decreaseDeployAmountAndSaveCoupon(final CouponGroup couponGroup, final Coupon coupon) {
         try {
             couponDeployAmountManager.decreaseDeployAmount(couponGroup);
-            applicationEventPublisher.publishEvent(new CouponIssueEvent(this, couponGroup));
-
             return couponRepository.save(coupon).getId();
         } catch (Exception exception) {
             couponDeployAmountManager.increase(couponGroup);
             throw exception;
         }
+    }
+
+    private void sendIssueEvent(final CouponGroup couponGroup) {
+        applicationEventPublisher.publishEvent(new CouponIssueEvent(this, couponGroup));
     }
 }
